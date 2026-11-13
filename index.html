@@ -1,0 +1,1322 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0B6A86">
+<meta name="description" content="Jogo de trigonometria para o ENEM: ciclo, ângulos notáveis, gráficos, triângulos, equações e a Lagoa do Junco.">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font-size:14px}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Arco Certo</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=STIX+Two+Text:ital,wght@0,500;1,500&display=swap">
+<style>
+/* Layout: uma coluna de celular sobre papel milimetrado; o ciclo e as ondas são o centro de cada tela e a ação principal fica presa no rodapé. */
+:root {
+  --bg: #EEF3F1;
+  --grid: rgba(12, 98, 120, .075);
+  --surface: #FFFFFF;
+  --surface-2: #E6EEEC;
+  --ink: #11212A;
+  --muted: #566870;
+  --line: #D2DDDB;
+  --accent: #0B6A86;
+  --accent-deep: #074A5E;
+  --accent-ink: #FFFFFF;
+  --accent-soft: rgba(11, 106, 134, .12);
+  --hl: #E9A800;
+  --hl-soft: rgba(240, 174, 0, .32);
+  --ok: #16804F;
+  --ok-soft: rgba(22, 128, 79, .13);
+  --bad: #BE3A32;
+  --bad-soft: rgba(190, 58, 50, .12);
+  --sombra: rgba(17, 33, 42, .14);
+  --agua: rgba(11, 106, 134, .13);
+  --junco: #3F7A3A;
+  --junco-flor: #8A5A2B;
+
+  --f-display: "Bricolage Grotesque", "Arial Black", system-ui, sans-serif;
+  --f-body: "Atkinson Hyperlegible", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-math: "STIX Two Text", "Cambria Math", Cambria, "Times New Roman", serif;
+  --r: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1A21; --grid: rgba(120, 205, 225, .06); --surface: #132732; --surface-2: #18323F;
+    --ink: #E5EFF1; --muted: #93A8B0; --line: #24414E;
+    --accent: #45BCD8; --accent-deep: #2B8EA6; --accent-ink: #06222B; --accent-soft: rgba(69, 188, 216, .16);
+    --hl: #FFC43A; --hl-soft: rgba(255, 196, 58, .26);
+    --ok: #3DCB89; --ok-soft: rgba(61, 203, 137, .15); --bad: #FF6F66; --bad-soft: rgba(255, 111, 102, .15);
+    --sombra: rgba(0, 0, 0, .5);
+    --agua: rgba(69, 188, 216, .14); --junco: #8CC56F; --junco-flor: #D2A26E;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1A21; --grid: rgba(120, 205, 225, .06); --surface: #132732; --surface-2: #18323F;
+  --ink: #E5EFF1; --muted: #93A8B0; --line: #24414E;
+  --accent: #45BCD8; --accent-deep: #2B8EA6; --accent-ink: #06222B; --accent-soft: rgba(69, 188, 216, .16);
+  --hl: #FFC43A; --hl-soft: rgba(255, 196, 58, .26);
+  --ok: #3DCB89; --ok-soft: rgba(61, 203, 137, .15); --bad: #FF6F66; --bad-soft: rgba(255, 111, 102, .15);
+  --sombra: rgba(0, 0, 0, .5);
+  --agua: rgba(69, 188, 216, .14); --junco: #8CC56F; --junco-flor: #D2A26E;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background-color: var(--bg);
+  background-image:
+    linear-gradient(var(--grid) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+  background-size: 22px 22px;
+  color: var(--ink);
+  font: 400 17px/1.5 var(--f-body);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+#app {
+  max-width: 520px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 14px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--hl); outline-offset: 2px; }
+
+/* Matemática */
+.m { font-family: var(--f-math); font-weight: 500; }
+.m i, .expl i, .formula i { font-family: var(--f-math); font-style: italic; }
+.fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; font-size: .8em; line-height: 1.08; margin: 0 .08em; }
+.fr > span:first-child { border-bottom: 1.5px solid currentColor; padding: 0 .16em .05em; }
+.fr > span:last-child { padding: .05em .16em 0; }
+.nao { font-family: var(--f-body); font-size: .78em; font-weight: 700; }
+
+/* Botões */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  width: 100%; min-height: 54px; padding: 14px 20px;
+  border: 0; border-radius: 999px; cursor: pointer; touch-action: manipulation;
+  font: 700 17px/1.1 var(--f-body);
+  transition: transform .08s ease, box-shadow .08s ease, opacity .15s;
+}
+.btn.primario { background: var(--accent); color: var(--accent-ink); box-shadow: 0 4px 0 var(--accent-deep); }
+.btn.ok { background: var(--ok); color: var(--surface); box-shadow: 0 4px 0 color-mix(in srgb, var(--ok) 70%, #000); }
+.btn.sec { background: var(--surface); color: var(--ink); border: 1.5px solid var(--line); box-shadow: 0 3px 0 var(--line); }
+.btn:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 var(--accent-deep); }
+.btn.sec:active:not(:disabled) { box-shadow: 0 0 0 var(--line); }
+.btn:disabled { opacity: .4; cursor: default; }
+
+/* Início */
+.hero { display: grid; gap: 12px; padding-top: 4px; }
+.hero-svg { width: 100%; height: auto; display: block; }
+.hero-svg .h-eixo { stroke: var(--muted); stroke-width: 1; opacity: .5; }
+.hero-svg .h-circ { fill: none; stroke: var(--ink); stroke-width: 2; }
+.hero-svg .h-fantasma { fill: none; stroke: var(--line); stroke-width: 2; stroke-dasharray: 3 5; }
+.hero-svg .h-onda { fill: none; stroke: var(--accent); stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.hero-svg .h-arco { fill: none; stroke: var(--hl); stroke-width: 6; stroke-linecap: round; }
+.hero-svg .h-liga { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.hero-svg .h-raio { stroke: var(--ink); stroke-width: 2; }
+.hero-svg .h-pt { fill: var(--hl); stroke: var(--ink); stroke-width: 2; }
+.hero-svg .h-pt2 { fill: var(--accent); stroke: var(--surface); stroke-width: 2; }
+.hero-svg .h-rot { fill: var(--muted); font: 500 12px var(--f-math); text-anchor: middle; }
+.titulo {
+  margin: 0; font-family: var(--f-display); font-weight: 800; font-size: clamp(46px, 14vw, 66px);
+  line-height: .95; letter-spacing: -.025em; text-wrap: balance;
+}
+.titulo .marca { background: linear-gradient(transparent 56%, var(--hl-soft) 56%, var(--hl-soft) 92%, transparent 92%); padding: 0 .06em; }
+.sub { margin: 0; color: var(--muted); max-width: 40ch; }
+.placar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.placar > div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 14px; display: grid; }
+.placar strong { font: 800 26px/1.1 var(--f-display); font-variant-numeric: tabular-nums; }
+.placar span { font-size: 13px; color: var(--muted); }
+.sec-tit { margin: 10px 0 0; font: 800 13px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+.trilha { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; position: relative; }
+.trilha::before { content: ""; position: absolute; left: 31px; top: 26px; bottom: 26px; border-left: 2px dashed var(--line); }
+.no {
+  position: relative; width: 100%; text-align: left; cursor: pointer; touch-action: manipulation;
+  display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 12px;
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 12px;
+}
+.no:not(:disabled):active { transform: scale(.99); }
+.no-num {
+  width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center;
+  font: 800 18px var(--f-display); background: var(--accent-soft); color: var(--accent); border: 2px solid var(--accent);
+}
+.no.feita .no-num { background: var(--accent); color: var(--accent-ink); }
+.no-txt { display: grid; min-width: 0; }
+.no-txt strong { font-size: 16px; line-height: 1.25; }
+.no-txt small { color: var(--muted); font-size: 13px; line-height: 1.3; }
+.no.trancada { opacity: .62; cursor: default; }
+.no.trancada .no-num { background: var(--surface-2); color: var(--muted); border-color: var(--line); }
+.no-dir small { font-size: 12px; color: var(--muted); max-width: 9ch; display: block; text-align: right; line-height: 1.2; }
+.estrelas { display: inline-flex; gap: 1px; font-size: 18px; line-height: 1; white-space: nowrap; }
+.estrelas b { color: var(--line); font-weight: 400; }
+.estrelas b.on { color: var(--hl); }
+.treino { display: flex; align-items: center; gap: 10px; font-size: 15px; color: var(--muted); padding: 6px 2px; cursor: pointer; }
+.treino input { width: 22px; height: 22px; accent-color: var(--accent); }
+.rodape { margin: 0 0 28px; font-size: 13px; color: var(--muted); }
+
+/* Fase */
+.hud { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.ico {
+  width: 44px; height: 44px; display: grid; place-items: center; border-radius: 50%;
+  background: var(--surface); border: 1px solid var(--line); cursor: pointer; color: var(--muted);
+}
+.hud-meio { display: grid; min-width: 0; }
+.hud-meio span { font-size: 12px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+.hud-meio strong { font: 800 18px/1.15 var(--f-display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hud-pts { text-align: right; display: grid; line-height: 1.05; }
+.hud-pts strong { font: 800 22px var(--f-display); font-variant-numeric: tabular-nums; color: var(--accent); }
+.hud-pts span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; }
+.trilho { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.trilho span { height: 8px; border-radius: 99px; background: var(--line); }
+.trilho span.pul { background: var(--muted); opacity: .55; }
+.trilho span.atual { outline: 2px solid var(--ink); outline-offset: 2px; }
+.trilho span.atual:not(.ok):not(.bad):not(.pul) { background: var(--accent); opacity: .5; }
+.trilho span.ok { background: var(--ok); }
+.trilho span.bad { background: var(--bad); }
+.linha-info { display: flex; justify-content: space-between; align-items: center; gap: 10px; min-height: 22px; font-size: 14px; color: var(--muted); }
+.relogio { font-variant-numeric: tabular-nums; font-weight: 700; }
+.combo { color: var(--ink); background: var(--hl-soft); padding: 2px 10px; border-radius: 99px; font-weight: 700; font-size: 13px; }
+.tempo { height: 6px; border-radius: 99px; background: var(--line); overflow: hidden; margin-top: -8px; }
+.tempo span { display: block; height: 100%; background: var(--hl); transform-origin: left; }
+.cartao {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--r);
+  padding: 18px; display: grid; gap: 14px; box-shadow: 0 2px 0 var(--line);
+}
+.eyebrow { margin: 0; font: 700 12px/1 var(--f-body); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+.pergunta { margin: 0; font: 700 20px/1.4 var(--f-body); text-wrap: pretty; }
+.pergunta .m { font-size: 1.12em; }
+.opcoes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.opcoes.col1 { grid-template-columns: 1fr; }
+.op {
+  min-height: 66px; padding: 10px 12px; cursor: pointer; touch-action: manipulation;
+  background: var(--surface); border: 2px solid var(--line); border-radius: 14px;
+  font-size: 22px; line-height: 1.2; color: var(--ink); box-shadow: 0 3px 0 var(--line);
+}
+.opcoes.col1 .op { font-size: 19px; text-align: left; padding: 12px 16px; }
+.op[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 3px 0 var(--accent); }
+.op.certa { border-color: var(--ok); background: var(--ok-soft); box-shadow: 0 3px 0 var(--ok); }
+.op.errada { border-color: var(--bad); background: var(--bad-soft); box-shadow: 0 3px 0 var(--bad); }
+.op:disabled { cursor: default; }
+
+/* Ciclo trigonométrico */
+.ciclo { width: 100%; max-width: 330px; margin: 0 auto; display: block; touch-action: none; user-select: none; -webkit-user-select: none; }
+.ciclo:focus, .ciclo .quad:focus { outline: none; }
+.ciclo:focus-visible { outline: 3px solid var(--hl); outline-offset: 4px; border-radius: 50%; }
+.ciclo .quad:focus-visible { stroke: var(--hl); stroke-width: 3; }
+.ciclo .eixo { stroke: var(--muted); stroke-width: 1.2; opacity: .55; }
+.ciclo .circ { fill: none; stroke: var(--ink); stroke-width: 2.2; }
+.ciclo .tk { stroke: var(--muted); stroke-width: 1.2; }
+.ciclo .tk.md { stroke-width: 2; stroke: var(--ink); opacity: .7; }
+.ciclo .tk.mj { stroke: var(--ink); stroke-width: 2.6; }
+.ciclo .rot { fill: var(--muted); font: 500 15px var(--f-math); text-anchor: middle; }
+.ciclo .arco { fill: none; stroke: var(--hl); stroke-width: 8; stroke-linecap: round; opacity: .9; }
+.ciclo .arco.v { stroke: var(--ok); }
+.ciclo .raio { stroke: var(--accent); stroke-width: 2.6; }
+.ciclo .proj { stroke: var(--muted); stroke-width: 1.2; stroke-dasharray: 4 4; }
+.ciclo .ponto { fill: var(--accent); stroke: var(--surface); stroke-width: 3.5; }
+.ciclo .ponto.errado { fill: var(--bad); }
+.ciclo .ponto.certo { fill: var(--ok); }
+.ciclo .quad { fill: transparent; cursor: pointer; stroke: none; }
+.ciclo .quad:hover { fill: var(--accent-soft); }
+.ciclo .quad.sel { fill: var(--accent-soft); stroke: var(--accent); stroke-width: 2; }
+.ciclo .quad.certa { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 2; }
+.ciclo .quad.errada { fill: var(--bad-soft); stroke: var(--bad); stroke-width: 2; }
+.ciclo .qrot { fill: var(--ink); font: 800 20px var(--f-display); text-anchor: middle; pointer-events: none; }
+.dica { margin: -4px 0 0; text-align: center; font-size: 14px; color: var(--muted); }
+.girar { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.girar .btn { min-height: 46px; font-size: 15px; }
+
+/* Ondas */
+.grafico { width: 100%; height: auto; display: block; }
+.grafico .og { stroke: var(--line); stroke-width: 1; }
+.grafico .og0 { stroke: var(--muted); stroke-width: 1.4; }
+.grafico .ol { fill: var(--muted); font: 500 12px var(--f-math); }
+.grafico .alvo-onda { fill: none; stroke: var(--hl); stroke-width: 4; stroke-dasharray: 7 6; stroke-linecap: round; }
+.grafico .jog-onda { fill: none; stroke: var(--accent); stroke-width: 3.2; stroke-linejoin: round; }
+.grafico .certa-onda { fill: none; stroke: var(--ok); stroke-width: 3.2; stroke-linejoin: round; }
+.formula { margin: 0; text-align: center; font-family: var(--f-math); font-size: 22px; font-weight: 500; }
+.ajustes { display: grid; gap: 8px; }
+.aj { display: grid; grid-template-columns: minmax(0, 1fr) 48px 44px 48px; align-items: center; gap: 8px; background: var(--surface-2); border-radius: 12px; padding: 6px 6px 6px 12px; }
+.aj-n { display: flex; align-items: baseline; gap: 8px; min-width: 0; }
+.aj-n b { font: italic 500 22px var(--f-math); }
+.aj-n small { color: var(--muted); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.aj output { text-align: center; font: 500 22px var(--f-math); font-variant-numeric: tabular-nums; }
+.pm {
+  width: 48px; height: 44px; border-radius: 10px; cursor: pointer; touch-action: manipulation;
+  background: var(--surface); border: 1.5px solid var(--line); font: 700 22px/1 var(--f-body); color: var(--accent);
+}
+.pm:active { transform: translateY(1px); }
+
+/* Triângulo */
+.tri { width: 100%; height: auto; display: block; }
+.tri .lado { fill: var(--accent-soft); stroke: var(--ink); stroke-width: 2.4; stroke-linejoin: round; }
+.tri .chao { stroke: var(--muted); stroke-width: 1.5; stroke-dasharray: 2 5; }
+.tri .angarc { fill: none; stroke: var(--hl); stroke-width: 3; }
+.tri .reto { fill: none; stroke: var(--ink); stroke-width: 1.6; }
+.tri .tl { fill: var(--ink); font: 500 16px var(--f-math); }
+.tri .tl.inc { fill: var(--accent); font: 800 22px var(--f-display); }
+.tri .tl.ang { fill: var(--ink); font-size: 15px; }
+
+/* Cenas do junco (desenhos esquemáticos, fora de escala) */
+.cena { width: 100%; height: auto; display: block; }
+.cena .agua { fill: var(--agua); }
+.cena .terra { fill: var(--surface-2); }
+.cena .sup { stroke: var(--accent); stroke-width: 2; }
+.cena .chao { stroke: var(--muted); stroke-width: 2; }
+.cena .junco { fill: none; stroke: var(--junco); stroke-width: 4.5; stroke-linecap: round; }
+.cena .junco-ini { stroke: var(--junco); stroke-width: 3; stroke-dasharray: 5 6; opacity: .5; }
+.cena .flor { fill: var(--junco-flor); }
+.cena .flor.fraca { opacity: .45; }
+.cena .guia { fill: none; stroke: var(--muted); stroke-width: 1.4; stroke-dasharray: 4 4; }
+.cena .sombra { stroke: var(--ink); stroke-width: 7; stroke-linecap: round; opacity: .3; }
+.cena .raio-sol { stroke: var(--hl); stroke-width: 2; stroke-dasharray: 6 5; }
+.cena .sol { fill: var(--hl); }
+.cena .angarc { fill: none; stroke: var(--hl); stroke-width: 3; }
+.cena .tl { fill: var(--ink); font: 500 15px var(--f-math); }
+.cena .tl.inc { fill: var(--accent); font: 800 22px var(--f-display); }
+.grafico .marca { fill: var(--junco-flor); stroke: var(--surface); stroke-width: 2; }
+
+/* Navegação entre questões */
+.barra-in.nav, .nav-folha { display: grid; grid-template-columns: 54px minmax(0, 1fr) 54px; gap: 10px; }
+.nav-folha { grid-template-columns: 54px minmax(0, 1fr); }
+.btn.seta { width: 54px; padding: 0; }
+
+/* Barra e folha de resposta */
+.espaco-barra { height: 104px; flex: none; }
+body.com-folha .espaco-barra { height: 62vh; }
+.barra {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+  padding: 12px max(16px, env(safe-area-inset-right, 0px)) calc(14px + env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px));
+  background: linear-gradient(to top, var(--bg) 72%, transparent);
+}
+.barra-in { max-width: 520px; margin: 0 auto; }
+.folha {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  padding: 0 max(8px, env(safe-area-inset-right, 0px)) 0 max(8px, env(safe-area-inset-left, 0px));
+  animation: sobe .22s ease-out;
+}
+.folha-in {
+  max-width: 536px; margin: 0 auto; max-height: 64vh; overflow: auto;
+  background: var(--surface); border: 1px solid var(--line); border-bottom: 0; border-radius: 22px 22px 0 0;
+  padding: 18px 18px calc(16px + env(safe-area-inset-bottom, 0px));
+  box-shadow: 0 -10px 30px var(--sombra); display: grid; gap: 10px;
+}
+.folha.ok .folha-in { border-top: 5px solid var(--ok); }
+.folha.bad .folha-in { border-top: 5px solid var(--bad); }
+.folha.neutra .folha-in { border-top: 5px solid var(--accent); }
+.folha-cab { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
+.folha-cab strong { font: 800 24px/1.1 var(--f-display); }
+.folha.ok .folha-cab strong { color: var(--ok); }
+.folha.bad .folha-cab strong { color: var(--bad); }
+.ganho { font: 800 20px var(--f-display); color: var(--ink); background: var(--hl-soft); padding: 2px 12px; border-radius: 99px; font-variant-numeric: tabular-nums; }
+.resp { margin: 0; font-weight: 700; }
+.resp .m { font-size: 1.15em; }
+.expl { margin: 0; color: var(--ink); line-height: 1.55; }
+.expl b { color: var(--muted); font-size: 13px; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 2px; }
+.duas { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@keyframes sobe { from { transform: translateY(24px); opacity: 0; } to { transform: none; opacity: 1; } }
+
+/* Resultado */
+.resultado { display: grid; gap: 14px; text-align: center; padding: 24px 0 32px; justify-items: center; }
+.estrelas.grandes { font-size: 64px; gap: 6px; }
+.estrelas.grandes b.on { animation: pop .5s cubic-bezier(.3, 1.6, .5, 1) backwards; }
+.estrelas.grandes b.on:nth-child(2) { animation-delay: .15s; }
+.estrelas.grandes b.on:nth-child(3) { animation-delay: .3s; }
+@keyframes pop { from { transform: scale(0) rotate(-40deg); } to { transform: none; } }
+.res-tit { margin: 0; font: 800 40px/1 var(--f-display); letter-spacing: -.02em; text-wrap: balance; }
+.res-sub { margin: 0; color: var(--muted); max-width: 34ch; }
+.res-num { margin: 6px 0; width: 100%; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.res-num div { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 10px 6px; }
+.res-num dt { font-size: 12px; color: var(--muted); line-height: 1.2; }
+.res-num dd { margin: 4px 0 0; font: 800 22px var(--f-display); font-variant-numeric: tabular-nums; }
+.res-num em { display: block; font: 700 11px var(--f-body); color: var(--accent); font-style: normal; text-transform: uppercase; letter-spacing: .08em; }
+.res-acoes { width: 100%; display: grid; gap: 12px; margin-top: 6px; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+</style>
+</head>
+<body>
+
+
+<div id="app" aria-live="polite"></div>
+
+<script id="nucleo">
+// ===== Núcleo: matemática exata e geradores de desafios (sem acesso à página) =====
+const MENOS = '−';
+const rnd = n => Math.floor(Math.random() * n);
+const pick = a => a[rnd(a.length)];
+function shuffle(a) { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = rnd(i + 1); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+const gcd = (a, b) => b ? gcd(b, a % b) : Math.abs(a);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const uniq = a => [...new Set(a)];
+
+// Texto matemático: x, θ e t em itálico; "a/b" vira fração empilhada.
+function fmt(s) {
+  return esc(s)
+    .replace(/(^|[^A-Za-zÀ-ÿ])([xθt])(?![A-Za-zÀ-ÿ])/g, '$1<i>$2</i>')
+    .replace(/([0-9√π]+)\/([0-9√π]+)/g, '<span class="fr"><span>$1</span><span>$2</span></span>');
+}
+const M = s => `<span class="m">${fmt(s)}</span>`;
+
+const MAG = [[0, '0'], [.5, '1/2'], [Math.SQRT1_2, '√2/2'], [Math.sqrt(3) / 2, '√3/2'], [1, '1'], [Math.sqrt(3) / 3, '√3/3'], [Math.sqrt(3), '√3']];
+const norm = d => ((d % 360) + 360) % 360;
+function quad(d) { d = norm(d); return d % 90 === 0 ? 0 : Math.floor(d / 90) + 1; }
+function ref(d) { d = norm(d); const q = quad(d); return q === 1 ? d : q === 2 ? 180 - d : q === 3 ? d - 180 : q === 4 ? 360 - d : d; }
+function sinal(f, q) {
+  if (f === 'sen') return q <= 2 ? 1 : -1;
+  if (f === 'cos') return (q === 1 || q === 4) ? 1 : -1;
+  return (q === 1 || q === 3) ? 1 : -1;
+}
+function exato(f, deg) {
+  const r = deg * Math.PI / 180;
+  let v;
+  if (f === 'tg') { if (Math.abs(Math.cos(r)) < 1e-9) return '∄'; v = Math.tan(r); }
+  else v = f === 'sen' ? Math.sin(r) : Math.cos(r);
+  if (Math.abs(v) < 1e-9) return '0';
+  const m = MAG.find(([x]) => Math.abs(Math.abs(v) - x) < 1e-9);
+  if (!m) throw new Error('sem valor exato: ' + f + ' ' + deg);
+  return (v < 0 ? MENOS : '') + m[1];
+}
+function rad(deg) {
+  if (deg === 0) return '0';
+  const neg = deg < 0;
+  let n = Math.abs(deg), d = 180;
+  const g = gcd(n, d); n /= g; d /= g;
+  const numr = (n === 1 ? '' : n) + 'π';
+  return (neg ? MENOS : '') + (d === 1 ? numr : numr + '/' + d);
+}
+const num = n => n < 0 ? MENOS + (-n) : String(n);
+const ang = (deg, modo) => modo === 'r' ? rad(deg) : num(deg) + '°';
+const NOME = { sen: 'seno', cos: 'cosseno', tg: 'tangente' };
+
+// --- Graus e radianos ---
+const POOL_CONV = [30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330, 360];
+function genConv() {
+  const deg = pick(POOL_CONV), paraRad = Math.random() < .5;
+  const viz = POOL_CONV.filter(d => d !== deg).sort((a, b) => Math.abs(a - deg) - Math.abs(b - deg)).slice(0, 6);
+  const ops = shuffle([deg, ...shuffle(viz).slice(0, 3)]);
+  const base = { key: 'c' + deg + (paraRad ? 'r' : 'g'), tipo: 'mc', tag: 'Graus e radianos', correta: ops.indexOf(deg) };
+  if (paraRad) return { ...base, enunciado: `Quanto é ${M(deg + '°')} em radianos?`, opcoes: ops.map(d => M(rad(d))),
+    explicacao: `180° equivalem a π rad. Então ${deg}° = ${deg}π/180 = ${rad(deg)} rad.` };
+  return { ...base, enunciado: `Quanto é ${M(rad(deg))} rad em graus?`, opcoes: ops.map(d => M(d + '°')),
+    explicacao: `π rad equivalem a 180°. Substituindo π por 180°, ${rad(deg)} = ${deg}°.` };
+}
+
+// --- Ciclo trigonométrico ---
+const POOL_CICLO = [30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
+function descreveLugar(d) {
+  const q = quad(d), r = ref(d);
+  if (q === 0) return d === 90 ? 'Fica no topo do ciclo, sobre o eixo vertical.' : d === 180 ? 'É o ponto mais à esquerda do ciclo.' : d === 270 ? 'Fica na base do ciclo, sobre o eixo vertical.' : 'É o ponto de partida, à direita.';
+  if (q === 1) return `Fica no 1º quadrante, ${r}° acima do eixo horizontal.`;
+  if (q === 2) return `${d}° = 180° − ${r}°: fica no 2º quadrante.`;
+  if (q === 3) return `${d}° = 180° + ${r}°: fica no 3º quadrante.`;
+  return `${d}° = 360° − ${r}°: fica no 4º quadrante.`;
+}
+function genTocar(modo) {
+  const deg = pick(POOL_CICLO);
+  const base = { key: 't' + modo + deg, tipo: 'ciclo', alvo: deg, rotulos: modo === 'r' ? 'r' : 'g', tag: 'Ciclo trigonométrico' };
+  if (modo === 'cong') {
+    const voltas = pick([1, 2]), neg = Math.random() < .5;
+    const mostrado = neg ? deg - 360 * voltas : deg + 360 * voltas;
+    return { ...base, rotulos: 'g', tag: 'Arcos côngruos',
+      enunciado: `Arraste o ponto até o arco côngruo a ${M(num(mostrado) + '°')} que fica entre 0° e 360°.`,
+      explicacao: (neg ? `Some voltas inteiras: ${num(mostrado)}° + ${voltas}·360° = ${deg}°. ` : `Tire voltas inteiras: ${mostrado}° − ${voltas}·360° = ${deg}°. `) + descreveLugar(deg) };
+  }
+  return { ...base, enunciado: `Arraste o ponto até ${M(ang(deg, modo))}.`,
+    explicacao: (modo === 'r' ? `${rad(deg)} = ${deg}°. ` : '') + descreveLugar(deg) };
+}
+function genQuad() {
+  const q = 1 + rnd(4);
+  const [f1, f2] = pick([['sen', 'cos'], ['sen', 'tg'], ['cos', 'tg']]);
+  const s = f => sinal(f, q) > 0 ? '> 0' : '< 0';
+  const pos = f => sinal(f, q) > 0 ? 'positivo' : 'negativo';
+  return { key: 'q' + q + f1 + f2, tipo: 'quad', alvo: q, tag: 'Sinais nos quadrantes',
+    enunciado: `Toque no quadrante em que ${M(f1 + ' θ ' + s(f1))} e ${M(f2 + ' θ ' + s(f2))}.`,
+    explicacao: `No ${q}º quadrante o cosseno (coordenada x) é ${pos('cos')}, o seno (coordenada y) é ${pos('sen')} e a tangente, sen ÷ cos, é ${pos('tg')}.` };
+}
+
+// --- Valores de sen, cos e tg ---
+const POOL_NOT = [0, 30, 45, 60, 90];
+const POOL_RED = [120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
+const labVal = v => v === '∄' ? '<span class="nao">não existe</span>' : M(v);
+function explicaValor(f, deg, modo) {
+  const v = exato(f, deg), d = norm(deg), lbl = ang(deg, modo), g = modo === 'r' ? ` (${d}°)` : '';
+  if (d % 90 === 0) {
+    const pt = { 0: '(1, 0)', 90: '(0, 1)', 180: '(−1, 0)', 270: '(0, −1)' }[d];
+    let t = `${lbl}${g} cai sobre um eixo, no ponto ${pt} do ciclo. O cosseno é a coordenada x e o seno é a coordenada y.`;
+    if (f === 'tg') t += v === '∄' ? ' Como o cosseno vale 0, a tangente (sen ÷ cos) não existe.' : ' A tangente é sen ÷ cos = 0.';
+    return t;
+  }
+  const q = quad(d), r = ref(d);
+  if (q === 1) return `${lbl}${g} é um ângulo notável: ${f} ${r}° = ${v}. Para lembrar: o seno de 30°, 45° e 60° vale 1/2, √2/2 e √3/2, o cosseno é a mesma lista ao contrário e tg = sen ÷ cos.`;
+  const pos = sinal(f, q) > 0;
+  return `${lbl}${g} está no ${q}º quadrante, com ângulo de referência ${r}°. Nesse quadrante o ${NOME[f]} é ${pos ? 'positivo' : 'negativo'}, então ${f} ${lbl} = ${pos ? '' : '−'}${f} ${r}° = ${v}.`;
+}
+function genValor(pool, modoPref) {
+  const f = pick(['sen', 'cos', 'tg', 'sen', 'cos']);
+  const deg = pick(pool);
+  const modo = modoPref === 'mix' ? pick(['g', 'r']) : modoPref;
+  const certo = exato(f, deg);
+  const fam = f === 'tg' ? ['0', '√3/3', '1', '√3'] : ['0', '1/2', '√2/2', '√3/2', '1'];
+  const cands = [];
+  fam.forEach(v => { cands.push(v); if (v !== '0') cands.push(MENOS + v); });
+  if (f === 'tg') cands.push('∄');
+  const ops = [certo];
+  const oposto = certo.startsWith(MENOS) ? certo.slice(1) : (certo === '0' || certo === '∄' ? null : MENOS + certo);
+  if (oposto) ops.push(oposto);
+  for (const v of shuffle(cands)) { if (ops.length >= 4) break; if (!ops.includes(v)) ops.push(v); }
+  const fin = shuffle(ops);
+  return { key: 'v' + f + deg, tipo: 'mc', tag: pool === POOL_NOT ? 'Ângulos notáveis' : 'Redução ao 1º quadrante',
+    enunciado: `Quanto vale ${M(f + ' ' + ang(deg, modo))}?`, opcoes: fin.map(labVal), correta: fin.indexOf(certo),
+    explicacao: explicaValor(f, deg, modo) };
+}
+
+// --- Triângulo retângulo ---
+const TRI = [
+  { id: 'rampa', dado: 'hip', pede: 'alt', txt: (v, t) => `Uma rampa de ${v} m de comprimento forma um ângulo de ${t}° com o chão. Qual é a altura que ela alcança?` },
+  { id: 'escada', dado: 'hip', pede: 'base', txt: (v, t) => `Uma escada de ${v} m está apoiada em uma parede e forma ${t}° com o chão. A que distância da parede fica o pé da escada?` },
+  { id: 'pipa', dado: 'hip', pede: 'alt', txt: (v, t) => `A linha esticada de uma pipa mede ${v} m e faz ${t}° com o chão. A que altura do chão está a pipa? (Despreze a altura da mão.)` },
+  { id: 'aviao', dado: 'hip', pede: 'base', txt: (v, t) => `Um avião sobe em linha reta, a ${t}° do solo, e percorre ${v} m. Quanto ele avançou na horizontal?` },
+  { id: 'sombra', dado: 'base', pede: 'alt', txt: (v, t) => `Com o sol a ${t}° acima do horizonte, um prédio projeta uma sombra de ${v} m. Qual é a altura do prédio?` },
+  { id: 'torre', dado: 'base', pede: 'alt', txt: (v, t) => `Uma pessoa a ${v} m da base de uma torre vê o topo sob um ângulo de ${t}° com o chão. Qual é a altura da torre? (Despreze a altura dos olhos.)` },
+];
+const SQ = { 1: 1, 2: Math.SQRT2, 3: Math.sqrt(3) };
+const kr = (k, r) => r === 1 ? `${k} m` : `${k === 1 ? '' : k}√${r} m`;
+const aprox = (k, r) => (k * SQ[r]).toFixed(1).replace('.', ',');
+function genTriangulo() {
+  const tpl = pick(TRI), t = pick([30, 45, 60]);
+  let v, certo, cands, expl;
+  if (tpl.dado === 'hip') {
+    v = pick([4, 6, 8, 10, 12, 16, 20, 30, 40, 50]);
+    const fn = tpl.pede === 'alt' ? 'sen' : 'cos';
+    certo = { sen: { 30: [v / 2, 1], 45: [v / 2, 2], 60: [v / 2, 3] }, cos: { 30: [v / 2, 3], 45: [v / 2, 2], 60: [v / 2, 1] } }[fn][t];
+    cands = [[v / 2, 1], [v / 2, 2], [v / 2, 3], [v, 1]];
+    const lado = tpl.pede === 'alt' ? 'cateto oposto ao ângulo' : 'cateto adjacente ao ângulo';
+    expl = `O comprimento dado é a hipotenusa e o que se pede é o ${lado}. Como ${fn === 'sen' ? 'sen θ = oposto ÷ hipotenusa' : 'cos θ = adjacente ÷ hipotenusa'}, a resposta é ${v}·${fn} ${t}° = ${v}·${exato(fn, t)} = ${kr(...certo)}${certo[1] === 1 ? '' : ` ≈ ${aprox(...certo)} m`}.`;
+  } else {
+    v = pick([6, 12, 18, 24, 30, 36, 60]);
+    certo = { 30: [v / 3, 3], 45: [v, 1], 60: [v, 3] }[t];
+    cands = [[v, 1], [v, 3], [v / 3, 3], [v / 2, 3]];
+    expl = `A distância no chão é o cateto adjacente e a altura é o cateto oposto. Como tg θ = oposto ÷ adjacente, a altura é ${v}·tg ${t}° = ${v}·${exato('tg', t)} = ${kr(...certo)}${certo[1] === 1 ? '' : ` ≈ ${aprox(...certo)} m`}.`;
+  }
+  const ops = shuffle(uniq(cands.map(c => kr(...c))));
+  const rot = { hip: tpl.dado === 'hip' ? `${v} m` : '', base: tpl.dado === 'base' ? `${v} m` : (tpl.pede === 'base' ? '?' : ''), alt: tpl.pede === 'alt' ? '?' : '' };
+  return { key: 'r' + tpl.id + t, tipo: 'mc', tag: 'Triângulo retângulo', enunciado: tpl.txt(v, t), visual: { tri: true, t, rot },
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(kr(...certo)), explicacao: expl };
+}
+
+// --- Funções e gráficos ---
+function fOnda(p) {
+  const d = p.d === 0 ? '' : num(p.d) + ' + ';
+  const a = p.a === 1 ? '' : p.a + '·';
+  return `y = ${d}${a}${p.f}(${p.b === 1 ? '' : p.b}x)`;
+}
+function genOnda(modo) {
+  const f = pick(['sen', 'cos']);
+  let p;
+  do { p = { f, a: 1 + rnd(3), b: 1 + rnd(3), d: rnd(3) - 1 }; } while (p.a === 1 && p.b === 1 && p.d === 0);
+  const T = rad(360 / p.b), mx = p.d + p.a, mn = p.d - p.a;
+  const base = { key: 'o' + modo + f + p.a + p.b + p.d, tipo: 'onda', alvo: p, f, tag: 'Gráficos' };
+  if (modo === 'visual') return { ...base, mostrarAlvo: true,
+    enunciado: `Ajuste ${M('y = d + a·' + f + '(bx)')} até a sua curva cobrir a onda tracejada.`,
+    explicacao: `A onda tracejada é ${fOnda(p)}. Ela sobe ${p.a} e desce ${p.a} em torno da linha y = ${num(p.d)} (amplitude a = ${p.a} e deslocamento d = ${num(p.d)}) e completa ${p.b} ${p.b > 1 ? 'ciclos' : 'ciclo'} entre 0 e 2π, ou seja, período 2π/${p.b} = ${T} (b = ${p.b}).` };
+  const mnTxt = mn < 0 ? `(${num(mn)})` : num(mn);
+  return { ...base, mostrarAlvo: false,
+    enunciado: `Monte ${M('y = d + a·' + f + '(bx)')} com período ${M(T)}, valor máximo ${M(num(mx))} e valor mínimo ${M(num(mn))}.`,
+    explicacao: `Período = 2π/b, então b = ${p.b}. Amplitude a = (máx − mín) ÷ 2 = (${num(mx)} − ${mnTxt}) ÷ 2 = ${p.a}. Deslocamento d = (máx + mín) ÷ 2 = ${num(p.d)}. Resposta: ${fOnda(p)}.` };
+}
+function genOndaMC(perg) {
+  const f = pick(['sen', 'cos']), A = (1 + rnd(5)) * (Math.random() < .3 ? -1 : 1), b = 1 + rnd(4), d = pick([-2, -1, 1, 2, 3, 4, 5]);
+  const aa = Math.abs(A);
+  const expr = `f(x) = ${num(d)} ${A < 0 ? MENOS : '+'} ${aa === 1 ? '' : aa}${f}(${b === 1 ? '' : b}x)`;
+  const base = { key: 'm' + perg + f + A + b + d, tipo: 'mc', tag: 'Funções trigonométricas' };
+  let certo, cands, enun, expl;
+  if (perg === 'periodo') {
+    const cd = 360 / b;
+    const outros = uniq([180 / b, 720 / b, 360 * b, 90, 60, 45, 120].filter(x => Number.isInteger(x) && x !== cd));
+    const ops = shuffle([cd, ...shuffle(outros).slice(0, 3)]);
+    return { ...base, enunciado: `Qual é o período de ${M(expr)}?`, opcoes: ops.map(x => M(rad(x))), correta: ops.indexOf(cd),
+      explicacao: `O período de ${f}(bx) é 2π/b. Aqui b = ${b}, então o período é 2π/${b} = ${rad(cd)}. O número somado (${num(d)}) e o que multiplica o ${f} (${num(A)}) não mudam o período.` };
+  }
+  if (perg === 'imagem') {
+    const I = (lo, hi) => `[${num(lo)}, ${num(hi)}]`;
+    certo = I(d - aa, d + aa);
+    cands = uniq([I(-aa, aa), I(d - 1, d + 1), I(d, d + aa), I(-d - aa, -d + aa), I(d - 2 * aa, d + 2 * aa)]).filter(x => x !== certo);
+    enun = `Qual é a imagem (conjunto de valores) de ${M(expr)}?`;
+    expl = `O ${NOME[f]} varia de −1 a 1. Multiplicado por ${num(A)}, varia de −${aa} a ${aa}. Somando ${num(d)}, varia de ${num(d - aa)} a ${num(d + aa)}.`;
+  } else {
+    certo = num(d + aa);
+    cands = uniq([d, aa, d - aa, d + 2 * aa, d + aa + 1].map(num)).filter(x => x !== certo);
+    enun = `Qual é o valor máximo de ${M(expr)}?`;
+    expl = `O ${NOME[f]} vale no máximo 1 e no mínimo −1. Como o coeficiente é ${num(A)}, o maior valor aparece quando ${f} = ${A < 0 ? '−1' : '1'}: ${num(d)} + ${aa} = ${num(d + aa)}.`;
+  }
+  const ops = shuffle([certo, ...shuffle(cands).slice(0, 3)]);
+  return { ...base, enunciado: enun, opcoes: ops.map(o => M(o)), correta: ops.indexOf(certo), explicacao: expl };
+}
+
+// --- Relações e equações ---
+const TRIPLAS = [[3, 4, 5], [5, 12, 13], [8, 15, 17], [7, 24, 25]];
+const frac = (n, d, neg) => (neg ? MENOS : '') + n + '/' + d;
+function genIdent(pede) {
+  const [a, b, c] = pick(TRIPLAS), q = pick([1, 2, 3, 4, 2, 3, 4]);
+  const sS = q <= 2 ? 1 : -1, sC = (q === 1 || q === 4) ? 1 : -1;
+  const sen = frac(a, c, sS < 0), cos = frac(b, c, sC < 0);
+  const base = `Pela relação fundamental, sen²x + cos²x = 1. Então cos²x = 1 − (${a}/${c})² = ${c * c - a * a}/${c * c} e |cos x| = ${b}/${c}. No ${q}º quadrante o cosseno é ${sC > 0 ? 'positivo' : 'negativo'}, logo cos x = ${cos}.`;
+  let certo, cands, expl;
+  if (pede === 'cos') {
+    certo = cos; cands = [frac(b, c, sC > 0), frac(a, c, false), frac(a, c, true), frac(b, a, sC < 0), frac(c, b, sC < 0)]; expl = base;
+  } else {
+    const neg = sS * sC < 0;
+    certo = frac(a, b, neg); cands = [frac(a, b, !neg), frac(b, a, neg), frac(a, c, neg), frac(b, c, neg)];
+    expl = base + ` Então tg x = sen x ÷ cos x = (${sen}) ÷ (${cos}) = ${certo}.`;
+  }
+  const ops = shuffle([certo, ...shuffle(uniq(cands).filter(x => x !== certo)).slice(0, 3)]);
+  return { key: 'i' + pede + a + q, tipo: 'mc', tag: 'Relação fundamental',
+    enunciado: `Sabendo que ${M('sen x = ' + sen)} e que ${M('x')} está no ${q}º quadrante, quanto vale ${M(pede + ' x')}?`,
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(certo), explicacao: expl };
+}
+function genDobro() {
+  const [a, b, c] = pick(TRIPLAS), qual = pick(['sen', 'cos']);
+  const c2 = c * c, s2 = frac(2 * a * b, c2), co2 = frac(b * b - a * a, c2);
+  const certo = qual === 'sen' ? s2 : co2;
+  const cands = qual === 'sen' ? [co2, frac(2 * a, c), frac(a * b, c2)] : [s2, frac(b - a, c), frac(b * b, c2)];
+  const ops = shuffle([certo, ...cands]);
+  return { key: 'd' + qual + a, tipo: 'mc', tag: 'Arco duplo',
+    enunciado: `Se ${M(`sen x = ${a}/${c}`)} e ${M(`cos x = ${b}/${c}`)}, quanto vale ${M(qual + ' 2x')}?`,
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(certo),
+    explicacao: qual === 'sen'
+      ? `sen 2x = 2·sen x·cos x = 2·(${a}/${c})·(${b}/${c}) = ${s2}.`
+      : `cos 2x = cos²x − sen²x = (${b}/${c})² − (${a}/${c})² = ${b * b}/${c2} − ${a * a}/${c2} = ${co2}.` };
+}
+const NOTAVEIS = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330];
+function genEquacao() {
+  const f = pick(['sen', 'cos']);
+  const v = pick(['1/2', '√2/2', '√3/2', MENOS + '1/2', MENOS + '√2/2', MENOS + '√3/2']);
+  const sols = NOTAVEIS.filter(d => exato(f, d) === v);
+  const r = ref(sols[0]);
+  const pts = [r, 180 - r, 180 + r, 360 - r];
+  const pares = [];
+  for (let i = 0; i < 4; i++) for (let j = i + 1; j < 4; j++) pares.push([pts[i], pts[j]]);
+  const kp = p => p.join('-'), certo = kp(sols);
+  const todos = shuffle([sols, ...shuffle(pares.filter(p => kp(p) !== certo)).slice(0, 3)]);
+  const absv = v.replace(MENOS, ''), pos = !v.startsWith(MENOS), qs = sols.map(quad);
+  return { key: 'e' + f + v, tipo: 'mc', tag: 'Equações',
+    enunciado: `Quais são as soluções de ${M(f + ' x = ' + v)} no intervalo ${M('[0, 2π)')}?`,
+    opcoes: todos.map(p => M(`{${rad(p[0])}, ${rad(p[1])}}`)), correta: todos.findIndex(p => kp(p) === certo),
+    explicacao: `O ângulo de referência é ${rad(r)}, porque ${f} ${rad(r)} = ${absv}. O ${NOME[f]} é ${pos ? 'positivo' : 'negativo'} no ${qs[0]}º e no ${qs[1]}º quadrantes, então x = ${rad(sols[0])} ou x = ${rad(sols[1])}.` };
+}
+const FORMULAS = [
+  ['sen²x + cos²x', '1', ['0', 'sen 2x', 'tg²x'], 'É a relação fundamental da trigonometria: vale para qualquer x, porque o ponto (cos x, sen x) está no círculo de raio 1.'],
+  ['2·sen x·cos x', 'sen 2x', ['cos 2x', '2·sen x', 'sen²x'], 'Fórmula do arco duplo: sen 2x = sen(x + x) = sen x·cos x + sen x·cos x = 2·sen x·cos x.'],
+  ['cos²x − sen²x', 'cos 2x', ['sen 2x', '1', MENOS + '1'], 'Fórmula do arco duplo: cos 2x = cos(x + x) = cos x·cos x − sen x·sen x = cos²x − sen²x.'],
+  ['1 + tg²x', 'sec²x', ['cossec²x', 'cotg²x', 'sen²x'], 'Divida sen²x + cos²x = 1 por cos²x: tg²x + 1 = 1 ÷ cos²x = sec²x.'],
+  ['sen(a + b)', 'sen a·cos b + sen b·cos a', ['sen a + sen b', 'sen a·cos b − sen b·cos a', 'cos a·cos b − sen a·sen b'], 'Seno da soma: “sen a cos b mais sen b cos a”. O seno não se distribui na soma: sen(a + b) ≠ sen a + sen b.'],
+  ['cos(a + b)', 'cos a·cos b − sen a·sen b', ['cos a + cos b', 'cos a·cos b + sen a·sen b', 'sen a·cos b + sen b·cos a'], 'Cosseno da soma: “cos cos menos sen sen”. Na diferença, cos(a − b), o sinal vira +.'],
+  ['tg x', 'sen x ÷ cos x', ['cos x ÷ sen x', 'sen x·cos x', '1 ÷ cos x'], 'A tangente é a razão entre seno e cosseno: tg x = sen x ÷ cos x (quando cos x ≠ 0).'],
+];
+function genFormula() {
+  const i = rnd(FORMULAS.length), [exp, certo, outros, expl] = FORMULAS[i];
+  const ops = shuffle([certo, ...outros]);
+  return { key: 'f' + i, tipo: 'mc', tag: 'Fórmulas', enunciado: `${M(exp)} é igual a:`,
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(certo), explicacao: expl };
+}
+
+// --- Contexto ENEM ---
+function genContexto() {
+  const tipo = pick(['mare', 'roda', 'pressao']);
+  let enun, q, certo, cands, expl, perg;
+  if (tipo === 'mare') {
+    const A = pick([4, 5, 6, 8]), B = pick([1, 2, 3]); perg = pick(['max', 'periodo']);
+    enun = `Em um porto, a altura da maré, em metros, é dada por ${M(`h(t) = ${A} + ${B === 1 ? '' : B + '·'}cos(πt/6)`)}, com ${M('t')} em horas.`;
+    if (perg === 'max') { q = 'Qual é a altura máxima da maré?'; certo = `${A + B} m`; cands = [`${A} m`, `${B} m`, `${A - B} m`, `${A + 2 * B} m`, `${2 * A} m`];
+      expl = `O cosseno vale no máximo 1. Então a altura máxima é ${A} + ${B}·1 = ${A + B} m.`; }
+    else { q = 'De quanto em quanto tempo a maré volta à mesma altura (período)?'; certo = '12 h'; cands = ['6 h', '24 h', '3 h'];
+      expl = 'O período é 2π dividido pelo número que multiplica t: 2π ÷ (π/6) = 2π·6/π = 12 horas.'; }
+  } else if (tipo === 'roda') {
+    const C = pick([12, 15, 18, 20]), R = pick([8, 10]), k = pick([2, 3, 4, 5]); perg = pick(['max', 'volta']);
+    enun = `A altura de uma cadeira de roda-gigante, em metros, é ${M(`h(t) = ${C} − ${R}·cos(πt/${k})`)}, com ${M('t')} em minutos.`;
+    if (perg === 'max') { q = 'Qual é a altura máxima que a cadeira atinge?'; certo = `${C + R} m`; cands = [`${C} m`, `${R} m`, `${C - R} m`, `${2 * R} m`, `${C + 2 * R} m`, `${C + R - 2} m`];
+      expl = `Como o ${R} está sendo subtraído, a altura é máxima quando cos = −1: h = ${C} − ${R}·(−1) = ${C + R} m.`; }
+    else { q = 'Quanto tempo a roda leva para dar uma volta completa?'; certo = `${2 * k} min`; cands = [`${k} min`, `${4 * k} min`, `${2 * k + 1} min`];
+      expl = `Uma volta é um período: 2π ÷ (π/${k}) = 2π·${k}/π = ${2 * k} minutos.`; }
+  } else {
+    const A = pick([90, 100, 110]), B = pick([15, 20, 25]); perg = pick(['max', 'min', 'bpm']);
+    enun = `A pressão no interior de uma artéria, em mmHg, varia com o tempo ${M('t')} (em segundos) segundo ${M(`P(t) = ${A} − ${B}·cos(8πt/3)`)}.`;
+    if (perg === 'max') { q = 'Qual é a pressão máxima (sistólica)?'; certo = `${A + B}`; cands = [`${A}`, `${A - B}`, `${B}`, `${A + 2 * B}`];
+      expl = `A pressão é máxima quando cos = −1: P = ${A} − ${B}·(−1) = ${A + B} mmHg.`; }
+    else if (perg === 'min') { q = 'Qual é a pressão mínima (diastólica)?'; certo = `${A - B}`; cands = [`${A}`, `${A + B}`, `${B}`, `${A - 2 * B}`];
+      expl = `A pressão é mínima quando cos = 1: P = ${A} − ${B}·1 = ${A - B} mmHg.`; }
+    else { q = 'Cada período corresponde a um batimento. Quantos batimentos por minuto?'; certo = '80'; cands = ['60', '90', '120', '75'];
+      expl = 'Período = 2π ÷ (8π/3) = 3/4 de segundo por batimento. Em 60 s: 60 ÷ (3/4) = 80 batimentos por minuto.'; }
+  }
+  const ops = shuffle([certo, ...shuffle(uniq(cands).filter(x => x !== certo)).slice(0, 3)]);
+  return { key: 'x' + tipo + perg, tipo: 'mc', tag: 'Contexto ENEM', enunciado: `${enun} ${q}`,
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(certo), explicacao: expl };
+}
+
+// --- Lagoa do Junco ---
+// [acima da água, distância até a margem, profundidade]: (p + h)² = p² + d² em todos.
+const LAGOS = [[1, 3, 4], [1, 5, 12], [1, 7, 24], [1, 9, 40], [2, 6, 8], [2, 8, 15], [2, 10, 24]];
+const pes = n => `${n} ${n === 1 ? 'pé' : 'pés'}`;
+const fracRed = (a, b) => { const g = gcd(a, b); return `${a / g}/${b / g}`; };
+const fracTxt = (a, b) => { const g = gcd(a, b); return g > 1 ? `${a}/${b} = ${a / g}/${b / g}` : `${a}/${b}`; };
+const krU = (k, r, u) => r === 1 ? `${k} ${u}` : `${k === 1 ? '' : k}√${r} ${u}`;
+function genLago() {
+  const [h, d, p] = pick(LAGOS), L = p + h, pede = pick(['prof', 'prof', 'comp']);
+  const certo = pede === 'prof' ? p : L;
+  const cands = uniq([p, L, d, p - h, L + h, 2 * d, p + 2]).filter(x => x > 0 && x !== certo);
+  const ops = shuffle([certo, ...shuffle(cands).slice(0, 3)]);
+  return { key: 'jl' + h + d + pede, tipo: 'mc', tag: 'Problema chinês do junco',
+    enunciado: `Num lago, um junco nasce no fundo, bem no centro, e passa ${pes(h)} acima da água. Puxado até a margem, a ${pes(d)} do centro, a ponta toca exatamente a superfície. ${pede === 'prof' ? 'Qual é a profundidade do lago?' : 'Qual é o comprimento do junco?'}`,
+    visual: { lago: true, h, d, p, L, rot: { h: pes(h), d: pes(d), p: pede === 'prof' ? '?' : pes(p), L: pede === 'comp' ? '?' : '' } },
+    opcoes: ops.map(o => M(pes(o))), correta: ops.indexOf(certo),
+    explicacao: `O junco tem o mesmo comprimento em pé e puxado: L = p + ${h}, em que p é a profundidade. Puxado, ele é a hipotenusa de um triângulo retângulo de catetos p e ${d}: (p + ${h})² = p² + ${d}². Desenvolvendo, ${2 * h}p + ${h * h} = ${d * d}, então p = ${p} pés e o junco mede ${L} pés. Este problema está no livro chinês Nove Capítulos sobre a Arte Matemática, de cerca de 2 mil anos atrás.` };
+}
+function genLagoAng() {
+  const [h, d, p] = pick(LAGOS), L = p + h, f = pick(['sen', 'cos', 'tg']);
+  const v = { sen: fracRed(d, L), cos: fracRed(p, L), tg: fracRed(d, p) };
+  const certo = v[f];
+  const cands = uniq([v.sen, v.cos, v.tg, fracRed(L, d), fracRed(p, d), fracRed(L, p)]).filter(x => x !== certo);
+  const ops = shuffle([certo, ...shuffle(cands).slice(0, 3)]);
+  return { key: 'ja' + h + d + f, tipo: 'mc', tag: 'Ângulo do junco',
+    enunciado: `No lago do junco, a profundidade é ${pes(p)}, o junco mede ${pes(L)} e foi puxado ${pes(d)} para o lado. Ele forma um ângulo ${M('θ')} com a posição em pé. Quanto vale ${M(f + ' θ')}?`,
+    visual: { lago: true, h, d, p, L, ang: true, rot: { h: '', d: pes(d), p: pes(p), L: pes(L) } },
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(certo),
+    explicacao: `O ângulo θ fica no fundo do lago, entre o junco em pé e o junco puxado. O cateto oposto a θ é a distância (${d}), o adjacente é a profundidade (${p}) e a hipotenusa é o junco (${L}). Então sen θ = ${fracTxt(d, L)}, cos θ = ${fracTxt(p, L)} e tg θ = ${fracTxt(d, p)}.` };
+}
+function genSombraJunco() {
+  const H = pick([60, 90, 120, 150, 180]), t = pick([30, 45, 60]);
+  const certo = { 30: [H, 3], 45: [H, 1], 60: [H / 3, 3] }[t];
+  const ok = krU(certo[0], certo[1], 'cm');
+  const ops = shuffle(uniq([[H, 1], [H, 3], [H / 3, 3], [H / 2, 3]].map(c => krU(c[0], c[1], 'cm'))));
+  const ap = Math.round(certo[0] * SQ[certo[1]]);
+  return { key: 'js' + t + H, tipo: 'mc', tag: 'Sombra do junco',
+    enunciado: `Um junco de ${H} cm cresce reto na beira do lago. Com o sol a ${t}° acima do horizonte, qual é o comprimento da sombra do junco no chão?`,
+    visual: { sombra: true, t, H },
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(ok),
+    explicacao: `A altura do junco é o cateto oposto ao ângulo do sol e a sombra é o cateto adjacente. Como tg ${t}° = ${H} ÷ sombra, a sombra é ${H} ÷ tg ${t}° = ${H} ÷ ${exato('tg', t)}${t === 60 ? ` = ${H}√3/3` : ''} = ${ok}${certo[1] === 1 ? '' : ` ≈ ${ap} cm`}.` };
+}
+function genInclinado() {
+  const L = pick([80, 100, 120, 140, 160, 200]), t = pick([30, 45, 60]);
+  const certo = { 30: [L / 2, 3], 45: [L / 2, 2], 60: [L / 2, 1] }[t];
+  const ok = krU(certo[0], certo[1], 'cm');
+  const ops = shuffle(uniq([[L / 2, 1], [L / 2, 2], [L / 2, 3], [L, 1]].map(c => krU(c[0], c[1], 'cm'))));
+  const ap = Math.round(certo[0] * SQ[certo[1]]);
+  return { key: 'ji' + t + L, tipo: 'mc', tag: 'Junco inclinado',
+    enunciado: `Um junco reto de ${L} cm, preso pela base, é empurrado pelo vento e fica inclinado ${t}° em relação à vertical. A que altura do chão fica a ponta?`,
+    visual: { inclinado: true, t, L },
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(ok),
+    explicacao: `O junco é a hipotenusa (${L} cm) e a altura da ponta é o cateto adjacente ao ângulo de ${t}° com a vertical. Como cos θ = adjacente ÷ hipotenusa, a altura é ${L}·cos ${t}° = ${L}·${exato('cos', t)} = ${ok}${certo[1] === 1 ? '' : ` ≈ ${ap} cm`}. Atenção: o ângulo foi medido a partir da vertical, por isso é cosseno e não seno.` };
+}
+function genBalanco() {
+  const A = pick([10, 15, 20, 25]), k = pick([1, 2, 3, 4]), perg = pick(['periodo', 'max']);
+  const arg = k === 1 ? 'πt' : `πt/${k}`;
+  let certo, cands, q, expl;
+  if (perg === 'periodo') {
+    certo = `${2 * k} s`; cands = [`${k} s`, `${4 * k} s`, `${2 * k + 1} s`, `${k + 3} s`];
+    q = 'Quanto tempo dura um vaivém completo?';
+    expl = `Um vaivém completo é um período: 2π ÷ ${k === 1 ? 'π' : `(π/${k})`} = ${2 * k} s.`;
+  } else {
+    certo = `${A}°`; cands = [`${2 * A}°`, `${A / 5}°`, '90°', `${A + 10}°`];
+    q = 'Qual é a maior inclinação que o junco atinge?';
+    expl = `O seno varia de −1 a 1, então θ varia de −${A}° a ${A}°. A maior inclinação é ${A}° para cada lado; ${2 * A}° é a distância entre os dois extremos.`;
+  }
+  const ops = shuffle([certo, ...shuffle(uniq(cands).filter(x => x !== certo)).slice(0, 3)]);
+  return { key: 'jb' + perg + A + k, tipo: 'mc', tag: 'Junco ao vento',
+    enunciado: `A inclinação de um junco ao vento, em graus, é ${M(`θ(t) = ${A}·sen(${arg})`)}, com ${M('t')} em segundos. ${q}`,
+    opcoes: ops.map(o => M(o)), correta: ops.indexOf(certo), explicacao: expl };
+}
+function genJuncoOnda() {
+  let p;
+  do { p = { f: 'sen', a: 1 + rnd(3), b: 1 + rnd(3), d: pick([-1, 0, 0, 1]) }; } while (p.a === 1 && p.b === 1 && p.d === 0);
+  const centro = p.d === 0 ? 'no centro (y = 0)' : p.d > 0 ? `${p.d} dm à direita (y = ${p.d})` : `${-p.d} dm à esquerda (y = ${num(p.d)})`;
+  return { key: 'jo' + p.a + p.b + p.d, tipo: 'onda', alvo: p, f: 'sen', junco: true, mostrarAlvo: false, tag: 'Junco ao vento',
+    enunciado: `A ponta de um junco balança ao vento, e o deslocamento dela, em decímetros, é ${M('y = d + a·sen(bx)')}. Monte a curva: em média a ponta fica ${centro}, vai ${p.a} dm para cada lado e faz ${p.b} ${p.b > 1 ? 'vaivéns completos' : 'vaivém completo'} entre 0 e 2π.`,
+    explicacao: `O centro do balanço é o deslocamento d = ${num(p.d)}. O quanto a ponta vai para cada lado é a amplitude a = ${p.a}. Cada vaivém é um período, e ${p.b} ${p.b > 1 ? 'vaivéns' : 'vaivém'} entre 0 e 2π dão b = ${p.b}. Resposta: ${fOnda(p)}.` };
+}
+
+// --- Trilha de fases ---
+const FASES = [
+  { id: 'radianos', nome: 'Graus e radianos', tema: 'Converter e localizar ângulos no ciclo',
+    itens: [() => genConv(), () => genConv(), () => genTocar('g'), () => genConv(), () => genTocar('g'), () => genConv()] },
+  { id: 'ciclo', nome: 'Ciclo trigonométrico', tema: 'Arcos em radianos, côngruos e sinais',
+    itens: [() => genTocar('r'), () => genQuad(), () => genTocar('r'), () => genQuad(), () => genTocar('cong'), () => genQuad()] },
+  { id: 'notaveis', nome: 'Ângulos notáveis', tema: 'sen, cos e tg de 0°, 30°, 45°, 60° e 90°',
+    itens: Array.from({ length: 6 }, () => () => genValor(POOL_NOT, 'mix')) },
+  { id: 'reducao', nome: 'Redução ao 1º quadrante', tema: 'Valores nos outros três quadrantes',
+    itens: Array.from({ length: 6 }, () => () => genValor(POOL_RED, 'mix')) },
+  { id: 'triangulo', nome: 'Triângulo retângulo', tema: 'Rampas, escadas, sombras e pipas',
+    itens: Array.from({ length: 6 }, () => () => genTriangulo()) },
+  { id: 'ondas', nome: 'Funções e gráficos', tema: 'Amplitude, período, imagem e máximo',
+    itens: [() => genOnda('visual'), () => genOndaMC('periodo'), () => genOnda('visual'), () => genOndaMC('imagem'), () => genOnda('descricao'), () => genOndaMC('max')] },
+  { id: 'relacoes', nome: 'Relações e equações', tema: 'sen²x + cos²x = 1, arco duplo e equações',
+    itens: [() => genIdent('cos'), () => genEquacao(), () => genFormula(), () => genIdent('tg'), () => genEquacao(), () => genDobro()] },
+  { id: 'junco', nome: 'Lagoa do Junco', tema: 'Um problema chinês de 2 mil anos, sombras e o junco ao vento',
+    itens: [() => genLago(), () => genLagoAng(), () => genInclinado(), () => genSombraJunco(), () => genBalanco(), () => genJuncoOnda()] },
+  { id: 'enem', nome: 'Simulado ENEM', tema: 'Questões com contexto e 45 s por questão', cronometro: 45,
+    itens: [() => genContexto(), () => genTriangulo(), () => genValor(POOL_RED, 'r'), () => genContexto(), () => genEquacao(), () => genOndaMC(pick(['periodo', 'imagem', 'max']))] },
+];
+function montarFase(f) {
+  const vistos = new Set();
+  return f.itens.map(g => {
+    let c;
+    for (let k = 0; k < 15; k++) { c = g(); if (!vistos.has(c.key)) break; }
+    vistos.add(c.key);
+    return c;
+  });
+}
+</script>
+
+<script>
+// ===== Interface =====
+const app = document.getElementById('app');
+const $ = (s, el = document) => el.querySelector(s);
+const KEY = 'arco-certo/progresso/v1';
+function lerProg() { try { const p = JSON.parse(localStorage.getItem(KEY)); return p && typeof p === 'object' ? p : {}; } catch (e) { return {}; } }
+const prog = Object.assign({ estrelas: {}, recorde: {}, treino: false }, lerProg());
+function salvarProg() { try { localStorage.setItem(KEY, JSON.stringify(prog)); } catch (e) { /* armazenamento indisponível: segue sem salvar */ } }
+const liberada = i => prog.treino || i === 0 || (prog.estrelas[FASES[i - 1].id] || 0) >= 1;
+const estrelasHTML = (n, cls = '') => `<span class="estrelas ${cls}" role="img" aria-label="${n} de 3 estrelas">${[0, 1, 2].map(i => `<b class="${i < n ? 'on' : ''}">★</b>`).join('')}</span>`;
+const ICON_X = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>';
+const ICON_LOCK = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
+
+let st = null;
+let relogioId = null, heroRAF = null, animRAF = null;
+function pararAnim() { if (animRAF) cancelAnimationFrame(animRAF); animRAF = null; }
+const ICON_ESQ = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg>';
+const ICON_DIR = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg>';
+
+// ---------- Início ----------
+function renderHome() {
+  pararRelogio(); pararHero(); pararAnim(); document.body.classList.remove('com-folha');
+  const total = FASES.reduce((s, f) => s + (prog.estrelas[f.id] || 0), 0);
+  const pts = FASES.reduce((s, f) => s + (prog.recorde[f.id] || 0), 0);
+  let prox = FASES.findIndex((f, i) => liberada(i) && !((prog.estrelas[f.id] || 0) >= 1));
+  if (prox < 0) prox = FASES.findIndex((f, i) => liberada(i) && (prog.estrelas[f.id] || 0) < 3);
+  if (prox < 0) prox = 0;
+  const fantasma = Array.from({ length: 61 }, (_, i) => { const p = i / 60 * 2 * Math.PI; return (i ? 'L' : 'M') + (128 + 200 * p / (2 * Math.PI)).toFixed(1) + ' ' + (75 - 48 * Math.sin(p)).toFixed(1); }).join(' ');
+  app.innerHTML = `
+    <section class="hero">
+      <svg class="hero-svg" viewBox="0 0 340 150" aria-hidden="true">
+        <line class="h-eixo" x1="8" y1="75" x2="334" y2="75"/>
+        <line class="h-eixo" x1="62" y1="19" x2="62" y2="131"/>
+        <line class="h-eixo" x1="128" y1="23" x2="128" y2="127"/>
+        <circle class="h-circ" cx="62" cy="75" r="48"/>
+        <path class="h-fantasma" d="${fantasma}"/>
+        <path class="h-arco" id="hArco" d=""/>
+        <path class="h-onda" id="hOnda" d=""/>
+        <line class="h-liga" id="hLiga"/>
+        <line class="h-raio" id="hRaio"/>
+        <circle class="h-pt" id="hPt" r="6"/>
+        <circle class="h-pt2" id="hPt2" r="5"/>
+        <text class="h-rot" x="228" y="144">π</text>
+        <text class="h-rot" x="328" y="144">2π</text>
+        <text class="h-rot" x="178" y="144">π/2</text>
+        <text class="h-rot" x="278" y="144">3π/2</text>
+      </svg>
+      <h1 class="titulo">Arco <span class="marca">Certo</span></h1>
+      <p class="sub">Trigonometria para o ENEM, uma fase de cada vez: ciclo, valores notáveis, gráficos, triângulos e equações.</p>
+      <div class="placar">
+        <div><strong>${total}</strong><span>de ${FASES.length * 3} estrelas</span></div>
+        <div><strong>${pts.toLocaleString('pt-BR')}</strong><span>pontos nos recordes</span></div>
+      </div>
+      <button class="btn primario" id="jogar">${total === 0 ? 'Começar' : 'Continuar'}: fase ${prox + 1}</button>
+    </section>
+    <h2 class="sec-tit">Trilha</h2>
+    <ol class="trilha">
+      ${FASES.map((f, i) => {
+        const lib = liberada(i), e = prog.estrelas[f.id] || 0;
+        return `<li><button class="no ${lib ? '' : 'trancada'} ${e > 0 ? 'feita' : ''}" data-fase="${i}" ${lib ? '' : 'disabled'} aria-label="Fase ${i + 1}: ${f.nome}${lib ? `, ${e} de 3 estrelas` : ', bloqueada'}">
+          <span class="no-num">${lib ? i + 1 : ICON_LOCK}</span>
+          <span class="no-txt"><strong>${f.nome}</strong><small>${f.tema}</small></span>
+          <span class="no-dir">${lib ? estrelasHTML(e) : '<small>4 acertos na anterior</small>'}</span>
+        </button></li>`;
+      }).join('')}
+    </ol>
+    <label class="treino" for="treino"><input type="checkbox" id="treino" ${prog.treino ? 'checked' : ''}><span>Modo treino: liberar todas as fases</span></label>
+    <p class="rodape">O progresso fica salvo só neste aparelho.</p>`;
+  $('#jogar').addEventListener('click', () => iniciarFase(prox));
+  app.querySelectorAll('.no').forEach(b => b.addEventListener('click', () => iniciarFase(+b.dataset.fase)));
+  $('#treino').addEventListener('change', e => { prog.treino = e.target.checked; salvarProg(); renderHome(); });
+  iniciarHero();
+  window.scrollTo(0, 0);
+}
+function iniciarHero() {
+  const g = id => document.getElementById(id);
+  const arco = g('hArco'), onda = g('hOnda'), liga = g('hLiga'), raio = g('hRaio'), pt = g('hPt'), pt2 = g('hPt2');
+  if (!arco) return;
+  const desenha = th => {
+    const px = 62 + 48 * Math.cos(th), py = 75 - 48 * Math.sin(th);
+    const qx = 128 + 200 * th / (2 * Math.PI), qy = 75 - 48 * Math.sin(th);
+    arco.setAttribute('d', th < .01 ? '' : `M 110 75 A 48 48 0 ${th > Math.PI ? 1 : 0} 0 ${px.toFixed(1)} ${py.toFixed(1)}`);
+    let d = 'M128 75';
+    for (let p = .05; p < th; p += .05) d += ` L${(128 + 200 * p / (2 * Math.PI)).toFixed(1)} ${(75 - 48 * Math.sin(p)).toFixed(1)}`;
+    d += ` L${qx.toFixed(1)} ${qy.toFixed(1)}`;
+    onda.setAttribute('d', d);
+    [['x1', px], ['y1', py], ['x2', qx], ['y2', qy]].forEach(([k, v]) => liga.setAttribute(k, v.toFixed(1)));
+    [['x1', 62], ['y1', 75], ['x2', px], ['y2', py]].forEach(([k, v]) => raio.setAttribute(k, v.toFixed ? v.toFixed(1) : v));
+    pt.setAttribute('cx', px.toFixed(1)); pt.setAttribute('cy', py.toFixed(1));
+    pt2.setAttribute('cx', qx.toFixed(1)); pt2.setAttribute('cy', qy.toFixed(1));
+  };
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { desenha(2.3); return; }
+  const t0 = performance.now();
+  const passo = now => { desenha(((now - t0) / 7000 * 2 * Math.PI) % (2 * Math.PI)); heroRAF = requestAnimationFrame(passo); };
+  desenha(2.3);
+  heroRAF = requestAnimationFrame(passo);
+}
+function pararHero() { if (heroRAF) cancelAnimationFrame(heroRAF); heroRAF = null; }
+
+// ---------- Fase ----------
+function iniciarFase(i) {
+  pararHero();
+  // respostas[i]: { estado: 'certo' | 'errado' | 'pulada', escolha }; prox = primeira questão ainda sem resposta.
+  st = { fi: i, itens: montarFase(FASES[i]), i: 0, prox: 0, respostas: [], acertos: 0, pontos: 0, combo: 0, maxCombo: 0 };
+  renderDesafio(0);
+}
+// Questão já respondida (ou pulada) abre em modo revisão; a da vez abre para responder.
+function renderDesafio(idx) {
+  pararRelogio(); pararAnim();
+  st.i = idx;
+  const f = FASES[st.fi], c = st.itens[idx], resp = st.respostas[idx], revisao = !!resp;
+  st.respondido = revisao; st.escolha = null; st.verificar = null; st.revelar = null; st.restaurar = null; st.lerEscolha = null;
+  document.body.classList.remove('com-folha');
+  app.innerHTML = `
+    <header class="hud">
+      <button class="ico" id="sair" aria-label="Sair da fase">${ICON_X}</button>
+      <div class="hud-meio"><span>Fase ${st.fi + 1} · questão ${st.i + 1} de ${st.itens.length}</span><strong>${f.nome}</strong></div>
+      <div class="hud-pts"><strong id="pts">${st.pontos}</strong><span>pontos</span></div>
+    </header>
+    <div class="trilho" aria-hidden="true">${st.itens.map((_, i) => { const r = st.respostas[i]; const cls = r ? (r.estado === 'certo' ? 'ok' : r.estado === 'pulada' ? 'pul' : 'bad') : ''; return `<span class="${cls}${i === idx ? ' atual' : ''}"></span>`; }).join('')}</div>
+    <div class="linha-info"><span class="relogio" id="relogio">${revisao ? 'Revisão' : ''}</span>${!revisao && st.combo >= 2 ? `<span class="combo">${st.combo} acertos seguidos</span>` : ''}</div>
+    ${f.cronometro && !revisao ? '<div class="tempo" aria-hidden="true"><span id="tempoBarra"></span></div>' : ''}
+    <section class="cartao">
+      <p class="eyebrow">${c.tag}</p>
+      <h2 class="pergunta">${c.enunciado}</h2>
+      <div id="area"></div>
+    </section>
+    <div class="espaco-barra"></div>
+    <div class="barra" id="barra"><div class="barra-in nav">
+      <button class="btn sec seta" id="voltarQ" aria-label="Voltar para a questão anterior" title="Questão anterior" ${idx === 0 ? 'disabled' : ''}>${ICON_ESQ}</button>
+      <button class="btn primario" id="confirmar" disabled>Verificar</button>
+      <button class="btn sec seta" id="pular" aria-label="Pular esta questão e avançar" title="Pular e avançar">${ICON_DIR}</button>
+    </div></div>
+    <div class="folha" id="folha" hidden></div>`;
+  const area = $('#area');
+  if (c.tipo === 'mc') montarMC(c, area);
+  else if (c.tipo === 'ciclo') montarCiclo(c, area);
+  else if (c.tipo === 'quad') montarQuad(c, area);
+  else if (c.tipo === 'onda') montarOnda(c, area);
+  $('#confirmar').addEventListener('click', () => { if (!st.respondido && st.verificar) responder(st.verificar(), false); });
+  $('#voltarQ').addEventListener('click', () => { if (idx > 0) renderDesafio(idx - 1); });
+  $('#pular').addEventListener('click', pular);
+  $('#sair').addEventListener('click', confirmarSaida);
+  if (revisao) {
+    if (st.restaurar && resp.escolha !== null && resp.escolha !== undefined) st.restaurar(resp.escolha);
+    if (st.revelar) st.revelar(resp.estado === 'certo');
+    mostrarExplicacao(c, resp, null, false);
+  } else {
+    iniciarRelogio(f.cronometro);
+  }
+  window.scrollTo(0, 0);
+}
+const habilitar = v => { const b = $('#confirmar'); if (b) b.disabled = !v; };
+
+function montarMC(c, area) {
+  const texto = o => o.replace(/<[^>]+>/g, '');
+  const longa = c.opcoes.some(o => texto(o).length > 12);
+  const visual = c.visual ? desenho(c.visual) : '';
+  area.innerHTML = `${visual}<div class="opcoes ${longa ? 'col1' : ''}" role="group" aria-label="Alternativas">${c.opcoes.map((o, i) => `<button class="op" data-i="${i}" aria-pressed="false">${o}</button>`).join('')}</div>`;
+  const bts = [...area.querySelectorAll('.op')];
+  bts.forEach(b => b.addEventListener('click', () => {
+    if (st.respondido) return;
+    bts.forEach(x => x.setAttribute('aria-pressed', 'false'));
+    b.setAttribute('aria-pressed', 'true');
+    st.escolha = +b.dataset.i;
+    habilitar(true);
+  }));
+  st.verificar = () => st.escolha === c.correta;
+  st.revelar = () => bts.forEach((b, i) => { b.disabled = true; if (i === c.correta) b.classList.add('certa'); else if (i === st.escolha) b.classList.add('errada'); });
+  st.lerEscolha = () => st.escolha;
+  st.restaurar = i => { st.escolha = i; if (bts[i]) bts[i].setAttribute('aria-pressed', 'true'); };
+  c.resposta = c.opcoes[c.correta];
+}
+
+// Ciclo: centro (150,150), raio 104, coordenadas da tela com y para baixo.
+const CC = 150, CR = 104;
+const pontoNo = deg => { const a = deg * Math.PI / 180; return [CC + CR * Math.cos(a), CC - CR * Math.sin(a)]; };
+function cicloBase(rotulos) {
+  let s = `<rect x="0" y="0" width="300" height="300" fill="transparent"/>
+    <line class="eixo" x1="${CC - CR - 20}" y1="${CC}" x2="${CC + CR + 20}" y2="${CC}"/>
+    <line class="eixo" x1="${CC}" y1="${CC - CR - 20}" x2="${CC}" y2="${CC + CR + 20}"/>
+    <circle class="circ" cx="${CC}" cy="${CC}" r="${CR}"/>`;
+  for (let d = 0; d < 360; d += 15) {
+    const a = d * Math.PI / 180, mj = d % 90 === 0, md = !mj && (d % 30 === 0 || d % 45 === 0), l = mj ? 10 : md ? 7 : 4;
+    s += `<line class="tk ${mj ? 'mj' : md ? 'md' : ''}" x1="${(CC + (CR - l) * Math.cos(a)).toFixed(1)}" y1="${(CC - (CR - l) * Math.sin(a)).toFixed(1)}" x2="${(CC + (CR + l) * Math.cos(a)).toFixed(1)}" y2="${(CC - (CR + l) * Math.sin(a)).toFixed(1)}"/>`;
+  }
+  const L = rotulos === 'r' ? ['0', 'π/2', 'π', '3π/2'] : ['0°', '90°', '180°', '270°'];
+  s += `<text class="rot" x="${CC + CR + 24}" y="${CC - 10}">${L[0]}</text>
+    <text class="rot" x="${CC + 14}" y="${CC - CR - 14}" text-anchor="start">${L[1]}</text>
+    <text class="rot" x="${CC - CR - 24}" y="${CC - 10}">${L[2]}</text>
+    <text class="rot" x="${CC + 14}" y="${CC + CR + 26}" text-anchor="start">${L[3]}</text>`;
+  return s;
+}
+function camadaPonto(deg, cls) {
+  const [x, y] = pontoNo(deg);
+  const arco = deg === 0 ? '' : `<path class="arco ${cls === 'certo' ? 'v' : ''}" d="M ${CC + CR} ${CC} A ${CR} ${CR} 0 ${deg > 180 ? 1 : 0} 0 ${x.toFixed(1)} ${y.toFixed(1)}"/>`;
+  return `${arco}<line class="proj" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${x.toFixed(1)}" y2="${CC}"/><line class="proj" x1="${x.toFixed(1)}" y1="${y.toFixed(1)}" x2="${CC}" y2="${y.toFixed(1)}"/><line class="raio" x1="${CC}" y1="${CC}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}"/><circle class="ponto ${cls}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12"/>`;
+}
+function montarCiclo(c, area) {
+  let deg = 0, mexeu = false;
+  area.innerHTML = `<svg class="ciclo" id="ciclo" viewBox="0 0 300 300" role="slider" tabindex="0" aria-label="Ponto no ciclo trigonométrico. Use as setas para girar." aria-valuemin="0" aria-valuemax="345" aria-valuenow="0">${cicloBase(c.rotulos)}<g id="din">${camadaPonto(0, '')}</g></svg>
+    <p class="dica">Arraste o ponto pelo círculo. Ele anda de 15° em 15°.</p>
+    <div class="girar"><button class="btn sec" data-g="-15" aria-label="Girar 15 graus no sentido horário">↻ voltar</button><button class="btn sec" data-g="15" aria-label="Girar 15 graus no sentido anti-horário">↺ avançar</button></div>`;
+  const svg = $('#ciclo'), din = $('#din');
+  const pinta = () => { din.innerHTML = camadaPonto(deg, ''); svg.setAttribute('aria-valuenow', deg); };
+  const muda = d => { if (st.respondido) return; deg = ((d % 360) + 360) % 360; mexeu = true; pinta(); habilitar(true); };
+  const angDoToque = e => {
+    const b = svg.getBoundingClientRect();
+    const x = (e.clientX - b.left) / b.width * 300 - CC, y = CC - (e.clientY - b.top) / b.height * 300;
+    if (Math.hypot(x, y) < 18) return null;
+    let a = Math.atan2(y, x) * 180 / Math.PI; if (a < 0) a += 360;
+    return (Math.round(a / 15) * 15) % 360;
+  };
+  let arrasta = false;
+  svg.addEventListener('pointerdown', e => { if (st.respondido) return; arrasta = true; try { svg.setPointerCapture(e.pointerId); } catch (_) {} const a = angDoToque(e); if (a !== null) muda(a); });
+  svg.addEventListener('pointermove', e => { if (!arrasta) return; const a = angDoToque(e); if (a !== null && a !== deg) muda(a); });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(t => svg.addEventListener(t, () => { arrasta = false; }));
+  svg.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { muda(deg + 15); e.preventDefault(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { muda(deg - 15); e.preventDefault(); }
+  });
+  area.querySelectorAll('.girar .btn').forEach(b => b.addEventListener('click', () => muda(deg + Number(b.dataset.g))));
+  st.verificar = () => mexeu && deg === norm(c.alvo);
+  st.lerEscolha = () => mexeu ? deg : null;
+  st.restaurar = d => { deg = d; mexeu = true; };
+  st.revelar = ok => {
+    area.querySelectorAll('.girar .btn').forEach(b => { b.disabled = true; });
+    din.innerHTML = ok ? camadaPonto(deg, 'certo') : `${mexeu ? camadaPonto(deg, 'errado') : ''}${camadaPonto(norm(c.alvo), 'certo')}`;
+  };
+  c.resposta = `${M(c.tag === 'Arcos côngruos' ? norm(c.alvo) + '°' : ang(c.alvo, c.rotulos))}${c.rotulos === 'r' ? ` (${c.alvo}°)` : ''}, o ponto verde no ciclo`;
+}
+function montarQuad(c, area) {
+  let wedges = '';
+  for (let q = 1; q <= 4; q++) {
+    const [x0, y0] = pontoNo((q - 1) * 90), [x1, y1] = pontoNo(q * 90), am = (q - .5) * Math.PI / 2;
+    wedges += `<path class="quad" data-q="${q}" role="button" tabindex="0" aria-label="${q}º quadrante" d="M ${CC} ${CC} L ${x0.toFixed(1)} ${y0.toFixed(1)} A ${CR} ${CR} 0 0 0 ${x1.toFixed(1)} ${y1.toFixed(1)} Z"/>
+      <text class="qrot" x="${(CC + CR * .56 * Math.cos(am)).toFixed(1)}" y="${(CC - CR * .56 * Math.sin(am) + 7).toFixed(1)}">${q}º</text>`;
+  }
+  area.innerHTML = `<svg class="ciclo" viewBox="0 0 300 300">${cicloBase('g')}${wedges}</svg>`;
+  const ps = [...area.querySelectorAll('.quad')];
+  const escolhe = p => { if (st.respondido) return; ps.forEach(x => x.classList.remove('sel')); p.classList.add('sel'); st.escolha = +p.dataset.q; habilitar(true); };
+  ps.forEach(p => {
+    p.addEventListener('click', () => escolhe(p));
+    p.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { escolhe(p); e.preventDefault(); } });
+  });
+  st.verificar = () => st.escolha === c.alvo;
+  st.lerEscolha = () => st.escolha;
+  st.restaurar = q => { st.escolha = q; };
+  st.revelar = () => ps.forEach(p => { const q = +p.dataset.q; p.classList.remove('sel'); if (q === c.alvo) p.classList.add('certa'); else if (q === st.escolha) p.classList.add('errada'); });
+  c.resposta = `${c.alvo}º quadrante`;
+}
+
+// Gráfico de onda: x de 0 a 2π, y de −5 a 5.
+const OG = { W: 320, H: 220, l: 30, r: 12, t: 10, b: 28, ymax: 5 };
+const ox = x => OG.l + x / (2 * Math.PI) * (OG.W - OG.l - OG.r);
+const oy = y => OG.t + (OG.ymax - y) / (2 * OG.ymax) * (OG.H - OG.t - OG.b);
+function caminho(p) {
+  let s = '';
+  for (let i = 0; i <= 180; i++) {
+    const x = i / 180 * 2 * Math.PI, y = p.d + p.a * (p.f === 'sen' ? Math.sin(p.b * x) : Math.cos(p.b * x));
+    s += (i ? 'L' : 'M') + ox(x).toFixed(1) + ' ' + oy(y).toFixed(1) + ' ';
+  }
+  return s;
+}
+function ondaBase() {
+  let s = '';
+  for (let y = -4; y <= 4; y++) s += `<line class="${y === 0 ? 'og0' : 'og'}" x1="${OG.l}" y1="${oy(y).toFixed(1)}" x2="${OG.W - OG.r}" y2="${oy(y).toFixed(1)}"/>`;
+  [-4, -2, 0, 2, 4].forEach(y => { s += `<text class="ol" x="${OG.l - 7}" y="${(oy(y) + 4).toFixed(1)}" text-anchor="end">${num(y)}</text>`; });
+  ['0', 'π/2', 'π', '3π/2', '2π'].forEach((t, k) => {
+    const x = ox(k * Math.PI / 2);
+    s += `<line class="${k === 0 ? 'og0' : 'og'}" x1="${x.toFixed(1)}" y1="${OG.t}" x2="${x.toFixed(1)}" y2="${OG.H - OG.b}"/><text class="ol" x="${x.toFixed(1)}" y="${OG.H - 8}" text-anchor="${k === 4 ? 'end' : k === 0 ? 'start' : 'middle'}">${t}</text>`;
+  });
+  return s;
+}
+function montarOnda(c, area) {
+  const jog = { f: c.f, a: 1, b: 1, d: 0 };
+  const LIM = { a: [1, 3], b: [1, 4], d: [-2, 2] }, ROT = { a: 'amplitude', b: 'frequência', d: 'deslocamento' };
+  area.innerHTML = `<svg class="grafico" id="graf" viewBox="0 0 ${OG.W} ${OG.H}" role="img" aria-label="Gráfico da função">${ondaBase()}${c.mostrarAlvo ? `<path class="alvo-onda" d="${caminho(c.alvo)}"/>` : ''}<path class="jog-onda" id="jogOnda" d="${caminho(jog)}"/></svg>
+    <p class="formula" id="formula" aria-live="polite">${fmt(fOnda(jog))}</p>
+    <div class="ajustes">${['a', 'b', 'd'].map(k => `<div class="aj"><span class="aj-n"><b>${k}</b><small>${ROT[k]}</small></span><button class="pm" data-k="${k}" data-s="-1" aria-label="Diminuir ${k}">−</button><output id="v-${k}">${num(jog[k])}</output><button class="pm" data-k="${k}" data-s="1" aria-label="Aumentar ${k}">+</button></div>`).join('')}</div>`;
+  const atualiza = () => {
+    $('#jogOnda').setAttribute('d', caminho(jog));
+    $('#formula').innerHTML = fmt(fOnda(jog));
+    ['a', 'b', 'd'].forEach(k => { $('#v-' + k).textContent = num(jog[k]); });
+  };
+  area.querySelectorAll('.pm').forEach(b => b.addEventListener('click', () => {
+    if (st.respondido) return;
+    const k = b.dataset.k;
+    jog[k] = Math.min(LIM[k][1], Math.max(LIM[k][0], jog[k] + Number(b.dataset.s)));
+    atualiza(); habilitar(true);
+  }));
+  if (c.junco) animarJunco(area, jog);
+  st.verificar = () => jog.a === c.alvo.a && jog.b === c.alvo.b && jog.d === c.alvo.d;
+  st.lerEscolha = () => ({ ...jog });
+  st.restaurar = j => { Object.assign(jog, j); atualiza(); };
+  st.revelar = ok => {
+    area.querySelectorAll('.pm').forEach(b => { b.disabled = true; });
+    if (!ok) $('#graf').insertAdjacentHTML('beforeend', `<path class="certa-onda" d="${caminho(c.alvo)}"/>`);
+  };
+  c.resposta = `${M(fOnda(c.alvo))} (a curva verde)`;
+}
+
+// Triângulo retângulo com o ângulo θ no canto esquerdo.
+function svgTri(t, rot) {
+  const x0 = 34, y0 = 168, tan = Math.tan(t * Math.PI / 180);
+  let bw = 200, h = bw * tan;
+  if (h > 140) { h = 140; bw = h / tan; }
+  const bx = x0 + bw, cy = y0 - h, a = t * Math.PI / 180;
+  const rotulo = (x, y, txt, anchor) => txt ? `<text class="tl ${txt === '?' ? 'inc' : ''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}">${esc(txt)}</text>` : '';
+  const mx = (x0 + bx) / 2, my = (y0 + cy) / 2, nx = -Math.sin(a), ny = -Math.cos(a);
+  return `<svg class="tri" viewBox="0 0 320 196" role="img" aria-label="Triângulo retângulo com ângulo de ${t} graus">
+    <line class="chao" x1="6" y1="${y0}" x2="314" y2="${y0}"/>
+    <path class="lado" d="M ${x0} ${y0} L ${bx.toFixed(1)} ${y0} L ${bx.toFixed(1)} ${cy.toFixed(1)} Z"/>
+    <path class="reto" d="M ${(bx - 13).toFixed(1)} ${y0} L ${(bx - 13).toFixed(1)} ${y0 - 13} L ${bx.toFixed(1)} ${y0 - 13}"/>
+    <path class="angarc" d="M ${x0 + 34} ${y0} A 34 34 0 0 0 ${(x0 + 34 * Math.cos(a)).toFixed(1)} ${(y0 - 34 * Math.sin(a)).toFixed(1)}"/>
+    ${rotulo(x0 + 52 * Math.cos(a / 2) + 2, y0 - 52 * Math.sin(a / 2) + 5, t + '°', 'start').replace('class="tl', 'class="tl ang')}
+    ${rotulo(mx + nx * 20, my + ny * 20 + 4, rot.hip, 'end')}
+    ${rotulo(mx, y0 + 22, rot.base, 'middle')}
+    ${rotulo(bx + 10, (y0 + cy) / 2 + 6, rot.alt, 'start')}
+  </svg>`;
+}
+
+// Cenas do junco: desenhos esquemáticos, fora de escala.
+const flor = (x, y, graus, cls = '') => `<ellipse class="flor ${cls}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" rx="4.5" ry="9" transform="rotate(${graus.toFixed(1)} ${x.toFixed(1)} ${y.toFixed(1)})"/>`;
+const rotTxt = (x, y, txt, anchor) => txt ? `<text class="tl ${txt === '?' ? 'inc' : ''}" x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${anchor}">${esc(txt)}</text>` : '';
+function svgLago(v) {
+  const cx = 104, sup = 66, fundo = 182, dx = 150, acima = 28;
+  const fi = Math.atan2(dx, fundo - sup), tx = cx + dx;
+  let ang = '';
+  if (v.ang) {
+    ang = `<path class="angarc" d="M ${cx} ${fundo - 34} A 34 34 0 0 1 ${(cx + 34 * Math.sin(fi)).toFixed(1)} ${(fundo - 34 * Math.cos(fi)).toFixed(1)}"/>`
+      + rotTxt(cx + 48 * Math.sin(fi / 2) + 2, fundo - 48 * Math.cos(fi / 2) + 6, 'θ', 'start');
+  }
+  return `<svg class="cena" viewBox="0 0 320 210" role="img" aria-label="Corte do lago com o junco em pé e o junco puxado até a superfície">
+    <rect class="agua" x="6" y="${sup}" width="308" height="${fundo - sup}"/>
+    <rect class="terra" x="6" y="${fundo}" width="308" height="22"/>
+    <line class="sup" x1="6" y1="${sup}" x2="314" y2="${sup}"/>
+    <line class="junco-ini" x1="${cx}" y1="${fundo}" x2="${cx}" y2="${sup - acima}"/>
+    ${flor(cx, sup - acima - 7, 0, 'fraca')}
+    <line class="junco" x1="${cx}" y1="${fundo}" x2="${tx}" y2="${sup}"/>
+    ${flor(tx + 7 * Math.sin(fi), sup - 7 * Math.cos(fi), fi * 180 / Math.PI)}
+    <line class="guia" x1="${cx}" y1="${sup - 12}" x2="${tx}" y2="${sup - 12}"/>
+    ${ang}
+    ${rotTxt(cx - 10, sup - acima / 2 + 4, v.rot.h, 'end')}
+    ${rotTxt(cx + dx / 2, sup - 18, v.rot.d, 'middle')}
+    ${rotTxt(cx - 10, (sup + fundo) / 2 + 6, v.rot.p, 'end')}
+    ${rotTxt(cx + dx / 2 + 16, (sup + fundo) / 2 + 22, v.rot.L, 'start')}
+  </svg>`;
+}
+function svgSombra(v) {
+  const chao = 172, bx = 252, hp = 118, a = v.t * Math.PI / 180, sp = hp / Math.tan(a), tip = bx - sp;
+  const sx = tip + (bx - tip) * 1.22, sy = chao - hp * 1.22;
+  return `<svg class="cena" viewBox="0 0 320 200" role="img" aria-label="Junco na beira do lago, com o sol a ${v.t} graus e a sombra no chão">
+    <rect class="agua" x="${bx + 20}" y="${chao}" width="${320 - bx - 26}" height="20"/>
+    <line class="chao" x1="6" y1="${chao}" x2="314" y2="${chao}"/>
+    <line class="raio-sol" x1="${tip.toFixed(1)}" y1="${chao}" x2="${sx.toFixed(1)}" y2="${sy.toFixed(1)}"/>
+    <circle class="sol" cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="12"/>
+    <line class="sombra" x1="${tip.toFixed(1)}" y1="${chao}" x2="${bx}" y2="${chao}"/>
+    <line class="junco" x1="${bx}" y1="${chao}" x2="${bx}" y2="${chao - hp}"/>
+    ${flor(bx, chao - hp - 7, 0)}
+    <path class="angarc" d="M ${(tip + 30).toFixed(1)} ${chao} A 30 30 0 0 0 ${(tip + 30 * Math.cos(a)).toFixed(1)} ${(chao - 30 * Math.sin(a)).toFixed(1)}"/>
+    ${rotTxt(tip + 40 * Math.cos(a / 2) + 4, chao - 40 * Math.sin(a / 2) + 5, v.t + '°', 'start')}
+    ${rotTxt(bx + 12, chao - hp / 2 + 5, v.H + ' cm', 'start')}
+    ${rotTxt((tip + bx) / 2, chao + 22, '?', 'middle')}
+  </svg>`;
+}
+function svgInclinado(v) {
+  const chao = 180, bx = 96, Lp = 150, a = v.t * Math.PI / 180;
+  const tx = bx + Lp * Math.sin(a), ty = chao - Lp * Math.cos(a);
+  return `<svg class="cena" viewBox="0 0 320 200" role="img" aria-label="Junco inclinado ${v.t} graus em relação à vertical">
+    <line class="chao" x1="6" y1="${chao}" x2="314" y2="${chao}"/>
+    <line class="guia" x1="${bx}" y1="${chao}" x2="${bx}" y2="${chao - Lp - 8}"/>
+    <line class="guia" x1="${tx.toFixed(1)}" y1="${ty.toFixed(1)}" x2="${tx.toFixed(1)}" y2="${chao}"/>
+    <line class="junco" x1="${bx}" y1="${chao}" x2="${tx.toFixed(1)}" y2="${ty.toFixed(1)}"/>
+    ${flor(tx + 7 * Math.sin(a), ty - 7 * Math.cos(a), v.t)}
+    <path class="angarc" d="M ${bx} ${chao - 36} A 36 36 0 0 1 ${(bx + 36 * Math.sin(a)).toFixed(1)} ${(chao - 36 * Math.cos(a)).toFixed(1)}"/>
+    ${rotTxt(bx + 48 * Math.sin(a / 2) + 2, chao - 48 * Math.cos(a / 2) + 2, v.t + '°', 'start')}
+    ${rotTxt(bx + .7 * Lp * Math.sin(a) - 12, chao - .7 * Lp * Math.cos(a) - 4, v.L + ' cm', 'end')}
+    ${rotTxt(tx + 10, (ty + chao) / 2 + 6, '?', 'start')}
+  </svg>`;
+}
+function desenho(v) {
+  if (v.tri) return svgTri(v.t, v.rot);
+  if (v.lago) return svgLago(v);
+  if (v.sombra) return svgSombra(v);
+  if (v.inclinado) return svgInclinado(v);
+  return '';
+}
+// Na questão do junco ao vento, a planta balança seguindo a curva montada pelo jogador.
+function animarJunco(area, jog) {
+  area.insertAdjacentHTML('afterbegin', `<svg class="cena" viewBox="0 0 320 112" aria-hidden="true">
+    <rect class="agua" x="0" y="94" width="320" height="18"/><line class="sup" x1="0" y1="94" x2="320" y2="94"/>
+    <line class="guia" x1="160" y1="10" x2="160" y2="94"/>
+    <path class="junco" id="jHaste" d="M160 108 L160 22"/>
+    <ellipse class="flor" id="jFlor" cx="160" cy="16" rx="4.5" ry="9"/>
+  </svg>`);
+  $('#graf').insertAdjacentHTML('beforeend', '<circle class="marca" id="gMarca" r="6" cx="-20" cy="-20"/>');
+  const haste = $('#jHaste'), fl = $('#jFlor'), marca = $('#gMarca');
+  const desenha = x => {
+    const y = jog.d + jog.a * Math.sin(jog.b * x), tx = 160 + y * 16, ty = 22;
+    haste.setAttribute('d', `M160 108 Q 160 62 ${tx.toFixed(1)} ${ty}`);
+    const g = Math.atan2(tx - 160, 46) * 180 / Math.PI;
+    fl.setAttribute('cx', tx.toFixed(1)); fl.setAttribute('cy', ty - 6);
+    fl.setAttribute('transform', `rotate(${g.toFixed(1)} ${tx.toFixed(1)} ${ty - 6})`);
+    marca.setAttribute('cx', ox(x).toFixed(1)); marca.setAttribute('cy', oy(y).toFixed(1));
+  };
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) { desenha(Math.PI / 2); return; }
+  const t0 = performance.now();
+  const passo = now => { desenha(((now - t0) / 5000 * 2 * Math.PI) % (2 * Math.PI)); animRAF = requestAnimationFrame(passo); };
+  animRAF = requestAnimationFrame(passo);
+}
+
+// ---------- Tempo, resposta e folha ----------
+function iniciarRelogio(limite) {
+  pararRelogio();
+  st.t0 = performance.now();
+  const el = $('#relogio'), barra = $('#tempoBarra');
+  const tique = () => {
+    const s = (performance.now() - st.t0) / 1000;
+    if (limite) {
+      const rest = Math.max(0, limite - s);
+      el.textContent = `${Math.ceil(rest)} s restantes`;
+      if (barra) barra.style.transform = `scaleX(${(rest / limite).toFixed(3)})`;
+      if (rest <= 0) { pararRelogio(); responder(false, true); }
+    } else {
+      el.textContent = `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
+    }
+  };
+  tique();
+  relogioId = setInterval(tique, 200);
+}
+function pararRelogio() { if (relogioId) clearInterval(relogioId); relogioId = null; }
+
+function responder(correto, esgotou) {
+  if (st.respondido) return;
+  st.respondido = true; pararRelogio();
+  const c = st.itens[st.i], s = (performance.now() - st.t0) / 1000;
+  let ganho = 0;
+  if (correto) {
+    st.acertos++; st.combo++; st.maxCombo = Math.max(st.maxCombo, st.combo);
+    ganho = 100 + Math.round(Math.max(0, 50 - s * 2.5)) + Math.min(100, (st.combo - 1) * 20);
+    st.pontos += ganho;
+  } else {
+    st.combo = 0;
+    try { if (navigator.vibrate) navigator.vibrate(90); } catch (e) { /* sem vibração */ }
+  }
+  st.respostas[st.i] = { estado: correto ? 'certo' : 'errado', escolha: st.lerEscolha ? st.lerEscolha() : null };
+  st.prox = st.i + 1;
+  if (st.revelar) st.revelar(correto);
+  $('#pts').textContent = st.pontos;
+  const seg = app.querySelectorAll('.trilho span')[st.i];
+  if (seg) seg.className = (correto ? 'ok' : 'bad') + ' atual';
+  mostrarExplicacao(c, st.respostas[st.i], ganho, esgotou);
+}
+// Avançar sem responder: a questão conta como não acertada, mas dá para voltar e ver a resposta.
+function pular() {
+  if (st.respondido) return;
+  st.respondido = true; pararRelogio();
+  st.combo = 0;
+  st.respostas[st.i] = { estado: 'pulada', escolha: null };
+  st.prox = st.i + 1;
+  if (st.prox >= st.itens.length) finalizar(); else renderDesafio(st.prox);
+}
+// ganho === null indica revisão de uma questão já resolvida.
+function mostrarExplicacao(c, resp, ganho, esgotou) {
+  const idx = st.i, ok = resp.estado === 'certo', revisao = ganho === null;
+  const titulo = resp.estado === 'pulada' ? 'Questão pulada.'
+    : ok ? (revisao ? 'Você acertou esta.' : pick(['Acertou!', 'Isso mesmo!', 'Arco certo!']))
+    : esgotou ? 'O tempo acabou.' : revisao ? 'Você errou esta.' : 'Não foi dessa vez.';
+  const destino = revisao ? idx + 1 : st.prox;
+  const rotulo = destino >= st.itens.length ? 'Ver resultado' : revisao ? (destino === st.prox ? 'Ir para a questão atual' : 'Avançar') : 'Próxima questão';
+  abrirFolha(ok ? 'ok' : 'bad', `
+    <div class="folha-cab"><strong>${titulo}</strong>${!revisao && ok ? `<span class="ganho">+${ganho}</span>` : ''}</div>
+    ${ok ? '' : `<p class="resp">Resposta: ${c.resposta}</p>`}
+    <p class="expl"><b>Por quê</b>${fmt(c.explicacao)}</p>
+    <div class="nav-folha">
+      <button class="btn sec seta" id="antF" aria-label="Voltar para a questão anterior" title="Questão anterior" ${idx === 0 ? 'disabled' : ''}>${ICON_ESQ}</button>
+      <button class="btn ${ok ? 'ok' : 'primario'}" id="continuar">${rotulo}</button>
+    </div>`);
+  $('#antF').addEventListener('click', () => { if (idx > 0) renderDesafio(idx - 1); });
+  $('#continuar').addEventListener('click', () => { if (destino >= st.itens.length) finalizar(); else renderDesafio(destino); });
+  $('#continuar').focus({ preventScroll: true });
+}
+function abrirFolha(tipo, html) {
+  const folha = $('#folha');
+  folha.className = 'folha ' + tipo;
+  folha.innerHTML = `<div class="folha-in" role="dialog" aria-modal="false">${html}</div>`;
+  folha.hidden = false;
+  $('#barra').hidden = true;
+  document.body.classList.add('com-folha');
+}
+function fecharFolha() {
+  $('#folha').hidden = true;
+  $('#barra').hidden = false;
+  document.body.classList.remove('com-folha');
+}
+function confirmarSaida() {
+  if (st.respondido) { renderHome(); return; }
+  abrirFolha('neutra', `
+    <div class="folha-cab"><strong>Sair da fase?</strong></div>
+    <p class="expl">Os acertos desta tentativa não serão salvos.</p>
+    <div class="duas"><button class="btn sec" id="ficar">Continuar jogando</button><button class="btn primario" id="sairSim">Sair</button></div>`);
+  $('#ficar').addEventListener('click', fecharFolha);
+  $('#sairSim').addEventListener('click', renderHome);
+}
+
+// ---------- Resultado ----------
+function finalizar() {
+  pararRelogio(); pararAnim(); document.body.classList.remove('com-folha');
+  const f = FASES[st.fi], n = st.acertos, e = n >= 6 ? 3 : n === 5 ? 2 : n === 4 ? 1 : 0;
+  if (e > (prog.estrelas[f.id] || 0)) prog.estrelas[f.id] = e;
+  const novoRec = st.pontos > (prog.recorde[f.id] || 0);
+  if (novoRec) prog.recorde[f.id] = st.pontos;
+  salvarProg();
+  const temProx = st.fi + 1 < FASES.length && liberada(st.fi + 1) && e > 0;
+  app.innerHTML = `
+    <section class="resultado">
+      <p class="eyebrow">Fase ${st.fi + 1} · ${f.nome}</p>
+      ${estrelasHTML(e, 'grandes')}
+      <h1 class="res-tit">${['Ainda não passou', 'Passou', 'Muito bem', 'Fase dominada'][e]}</h1>
+      <p class="res-sub">${e === 0 ? 'São precisos 4 acertos para liberar a próxima fase. Releia as explicações e tente de novo: as questões mudam a cada tentativa.' : e === 3 ? 'Acertou as 6 questões.' : 'Acerte as 6 questões para ganhar 3 estrelas.'}</p>
+      <dl class="res-num">
+        <div><dt>Acertos</dt><dd>${n}/${st.itens.length}</dd></div>
+        <div><dt>Pontos</dt><dd>${st.pontos}${novoRec && st.pontos > 0 ? '<em>recorde</em>' : ''}</dd></div>
+        <div><dt>Sequência</dt><dd>${st.maxCombo}</dd></div>
+      </dl>
+      <div class="res-acoes">
+        ${temProx ? '<button class="btn primario" id="prox">Próxima fase</button>' : ''}
+        <button class="btn ${temProx ? 'sec' : 'primario'}" id="denovo">Jogar de novo</button>
+        <button class="btn sec" id="trilhaBt">Voltar à trilha</button>
+      </div>
+    </section>`;
+  if (temProx) $('#prox').addEventListener('click', () => iniciarFase(st.fi + 1));
+  $('#denovo').addEventListener('click', () => iniciarFase(st.fi));
+  $('#trilhaBt').addEventListener('click', renderHome);
+  window.scrollTo(0, 0);
+}
+
+renderHome();
+</script>
+
+</body>
+</html>
